@@ -1,0 +1,132 @@
+erDiagram
+
+    USUARIO {
+        Long id PK
+        String nombre
+        String email
+        String password
+        Enum rol
+        Boolean activo
+        DateTime creadoEn
+    }
+
+    ZONA {
+        Long id PK
+        String nombre
+        String descripcion
+        Integer capacidad
+        String codigoQR
+        String pinRotativo
+        Boolean activa
+    }
+
+    TURNO {
+        Long id PK
+        Long usuarioId FK
+        Long zonaId FK
+        DateTime fechaHoraInicio
+        DateTime fechaHoraFin
+        Enum franja
+        Enum estado
+    }
+
+    CHECKPOINT {
+        Long id PK
+        Long zonaId FK
+        String nombre
+        String codigoQR
+        String descripcion
+        Boolean activo
+    }
+
+    CHECKIN {
+        Long id PK
+        Long turnoId FK
+        Long checkpointId FK
+        DateTime timestamp
+        Enum metodo
+        Boolean esRecorrido
+    }
+
+    INCIDENTE {
+        Long id PK
+        Long turnoId FK
+        Long zonaId FK
+        Long reportadoPorId FK
+        Enum tipo
+        Enum severidad
+        String descripcion
+        String cursoEstudiante
+        DateTime timestamp
+    }
+
+    REASIGNACION {
+        Long id PK
+        Long turnoId FK
+        Long docenteOriginalId FK
+        Long docenteReemplazoId FK
+        String motivo
+        Enum estado
+        DateTime timestampPropuesta
+        DateTime timestampRespuesta
+    }
+
+    REGISTRO_LIMPIEZA {
+        Long id PK
+        Long turnoId FK
+        Long registradoPorId FK
+        Enum escala
+        String observacion
+        DateTime timestamp
+    }
+
+    NOTIFICACION {
+        Long id PK
+        Long usuarioId FK
+        Long turnoId FK
+        Long incidenteId FK
+        Enum tipo
+        String mensaje
+        Boolean leida
+        DateTime timestamp
+    }
+
+    MAPA_CALOR {
+        Long id PK
+        Long zonaId FK
+        Enum franja
+        Enum tipoIncidente
+        Integer totalIncidentes
+        Double porcentaje
+        String semana
+    }
+
+    METRICA_DOCENTE {
+        Long id PK
+        Long usuarioId FK
+        String trimestre
+        Double puntualidad
+        Integer totalRecorridos
+        Double calidadRegistro
+        Double contribucionPreventiva
+        Boolean reconocimiento
+        Double puntajeTotal
+    }
+
+    USUARIO ||--o{ TURNO : "asignado a"
+    ZONA ||--o{ TURNO : "cubre"
+    TURNO ||--o{ CHECKIN : "registra"
+    ZONA ||--o{ CHECKPOINT : "contiene"
+    CHECKPOINT ||--o{ CHECKIN : "valida"
+    TURNO ||--o{ INCIDENTE : "ocurre en"
+    ZONA ||--o{ INCIDENTE : "ubicado en"
+    USUARIO ||--o{ INCIDENTE : "reporta"
+    TURNO ||--o{ REASIGNACION : "genera"
+    USUARIO ||--o{ REASIGNACION : "es reemplazado"
+    USUARIO ||--o{ REASIGNACION : "reemplaza a"
+    TURNO ||--|| REGISTRO_LIMPIEZA : "cierra con"
+    USUARIO ||--o{ NOTIFICACION : "recibe"
+    TURNO ||--o{ NOTIFICACION : "dispara"
+    INCIDENTE ||--o{ NOTIFICACION : "genera"
+    ZONA ||--o{ MAPA_CALOR : "agrega en"
+    USUARIO ||--|| METRICA_DOCENTE : "tiene"
