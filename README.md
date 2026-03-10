@@ -7,11 +7,11 @@
 
 ## 📦 Estado de las entregas
 
-| Entrega | Peso | Estado |
-|---------|------|--------|
-| Primera entrega | 10% | 👨🏻‍💻 Trabajando |
-| Segunda entrega | 20% | 🔲 Pendiente |
-| Tercera entrega | 30% | 🔲 Pendiente |
+| Entrega | Estado |
+|---------|--------|
+| Primera entrega | 👨🏻‍💻 Trabajando |
+| Segunda entrega | 🔲 Pendiente |
+| Tercera entrega | 🔲 Pendiente |
 
 ---
 
@@ -48,11 +48,11 @@
 
 ### Entregables
 
-| # | Entregable | Peso | Estado |
-|---|-----------|------|--------|
-| 1 | Diseño detallado de servicios REST y Arquitectura SPA | 20% | 🔲 |
-| 2 | Implementación de funcionalidades principales | 50% | 🔲 |
-| 3 | Video explicativo del código y funcionalidades | 30% | 🔲 |
+| # | Entregable | Estado |
+|---|-----------|--------|
+| 1 | Diseño detallado de servicios REST y Arquitectura SPA | 🔲 |
+| 2 | Implementación de funcionalidades principales | 🔲 |
+| 3 | Video explicativo del código y funcionalidades | 🔲 |
 
 > ⚠️ **Sin autenticación** — tampoco se implementa en esta entrega.
 
@@ -74,12 +74,12 @@
 
 ### Entregables
 
-| # | Entregable | Peso | Estado |
-|---|-----------|------|--------|
-| 1 | SPA + servicios REST con autenticación y autorización | 40% | 🔲 |
-| 2 | Pruebas de integración automatizadas (una por método HTTP complejo) | 20% | 🔲 |
-| 3 | Prueba de sistema automatizada (caso de uso más complejo) | 15% | 🔲 |
-| 4 | Video explicativo del código y funcionalidades | 25% | 🔲 |
+| # | Entregable | Estado |
+|---|-----------|--------|
+| 1 | SPA + servicios REST con autenticación y autorización | 🔲 |
+| 2 | Pruebas de integración automatizadas (una por método HTTP complejo) | 🔲 |
+| 3 | Prueba de sistema automatizada (caso de uso más complejo) | 🔲 |
+| 4 | Video explicativo del código y funcionalidades | 🔲 |
 
 ### Qué se espera implementar
 
