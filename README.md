@@ -19,14 +19,14 @@
 
 ### Entregables
 
-| # | Entregable | Peso | Estado |
-|---|-----------|------|--------|
-| 1 | Descripción detallada de casos de uso | 20% | ✅ |
-| 2 | Mockups de pantallas + diagrama de navegación | 15% | 👨🏻‍💻 Trabajando |
-| 3 | Diagrama de entidades (ER / Clases) | 15% | ✅ |
-| 4 | Aplicación MPA con CRUD de todas las entidades | 15% | 👨🏻‍💻 Trabajando |
-| 5 | Programa Batch en Java Spring (carga de BD) | 10% | 👨🏻‍💻 Trabajando|
-| 6 | Video explicativo del diseño y código | 25% | 👨🏻‍💻 Trabajando |
+| # | Entregable |Estado |
+|---|-----------|--------|
+| 1 | Descripción detallada de casos de uso | ✅ |
+| 2 | Mockups de pantallas + diagrama de navegación | 👨🏻‍💻 Trabajando |
+| 3 | Diagrama de entidades (ER / Clases) | ✅ |
+| 4 | Aplicación MPA con CRUD de todas las entidades | 👨🏻‍💻 Trabajando |
+| 5 | Programa Batch en Java Spring (carga de BD) | 👨🏻‍💻 Trabajando|
+| 6 | Video explicativo del diseño y código | 👨🏻‍💻 Trabajando |
 
 
 ### Qué se implementó
