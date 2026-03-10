@@ -1,0 +1,598 @@
+\documentclass[12pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{geometry}
+\setlength{\headheight}{15pt}
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{multirow}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% ── Colores ───────────────────────────────────────────────────────────────────
+\definecolor{azulOscuro}{RGB}{30, 58, 95}
+\definecolor{azulMedio}{RGB}{52, 100, 163}
+\definecolor{azulClaro}{RGB}{209, 226, 245}
+\definecolor{grisFondo}{RGB}{248, 249, 251}
+\definecolor{grisLinea}{RGB}{220, 224, 230}
+
+% ── Encabezado/pie ────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{azulOscuro}\textbf{Sistema de Vigilancia Docente}}
+\fancyhead[R]{\small\color{azulOscuro}Casos de Uso -- Primera Entrega}
+\fancyfoot[C]{\small\color{gray}\thepage}
+\renewcommand{\headrulewidth}{0.6pt}
+
+% ── Títulos ───────────────────────────────────────────────────────────────────
+\titleformat{\section}{\Large\bfseries\color{azulOscuro}}{\thesection.}{0.6em}{}
+  [\vspace{-2pt}\color{azulMedio}\rule{\linewidth}{1.5pt}\vspace{2pt}]
+
+\titleformat{\subsection}{\normalsize\bfseries\color{azulMedio}}{\thesubsection}{0.5em}{}
+
+% ── Caja de caso de uso ───────────────────────────────────────────────────────
+\tcbset{
+  casousostyle/.style={
+    enhanced, breakable,
+    colback=grisFondo,
+    colframe=azulOscuro,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=10pt, right=10pt, top=8pt, bottom=8pt,
+    fonttitle=\bfseries\large\color{white},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=azulOscuro, arc=3pt, boxrule=0pt},
+  }
+}
+
+% Comando: \cu{ID -- Nombre}{Actor}{ contenido tabular }
+\newcommand{\cu}[3]{%
+  \begin{tcolorbox}[casousostyle, title={#1},
+    after title={\hfill\small\normalfont\color{white!80!azulOscuro}#2}]
+  \renewcommand{\arraystretch}{1.35}
+  \begin{tabularx}{\linewidth}{>{\bfseries\color{azulOscuro}\small}p{3.6cm} X}
+  #3
+  \end{tabularx}
+  \end{tcolorbox}
+  \vspace{6pt}
+}
+
+\newcommand{\fcu}[2]{\small\textbf{\color{azulOscuro}#1} & \small #2 \\}
+
+% ── Pasos numerados ───────────────────────────────────────────────────────────
+\newlist{pasos}{enumerate}{1}
+\setlist[pasos]{label=\textbf{\arabic*.}, leftmargin=*, itemsep=2pt, topsep=2pt, parsep=0pt}
+
+% ── Hyperref ──────────────────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=azulMedio, urlcolor=azulMedio,
+  pdftitle={Casos de Uso -- Sistema de Vigilancia Docente}}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+\thispagestyle{empty}
+
+% ── Portada ───────────────────────────────────────────────────────────────────
+\begin{center}
+  \vspace*{1.5cm}
+  {\color{azulOscuro}\rule{\linewidth}{2.5pt}}
+  \vspace{0.5cm}
+
+  {\Huge\bfseries\color{azulOscuro} Sistema Hibrido para la\\[6pt] Vigilancia Docente}
+
+  \vspace{0.4cm}
+  {\color{azulMedio}\rule{\linewidth}{1pt}}
+  \vspace{0.6cm}
+
+  {\Large\color{azulMedio} Descripcion Detallada de Casos de Uso}
+
+  \vspace{1.2cm}
+
+  \begin{tcolorbox}[colback=azulClaro, colframe=azulMedio, arc=6pt,
+    boxrule=1pt, left=16pt, right=16pt, top=12pt, bottom=12pt]
+    \centering
+    {\large\bfseries\color{azulOscuro} Proyecto de Desarrollo Web 2026}\\[6pt]
+    {\normalsize\color{azulOscuro} Ing.\ Juan Camilo Gonzalez Vargas}\\[6pt]
+    {\normalsize\color{azulOscuro} Primera Entrega --- 10\%}
+  \end{tcolorbox}
+
+  \vspace{1.5cm}
+
+  {\normalsize\color{gray}
+    \begin{tabular}{ll}
+      \textbf{Version:} & 1.0 \\[2pt]
+      \textbf{Fecha:}   & Marzo 2026 \\[2pt]
+      \textbf{Estado:}  & Primera Entrega \\
+    \end{tabular}
+  }
+
+  \vfill
+  {\color{azulOscuro}\rule{\linewidth}{2.5pt}}
+\end{center}
+
+\newpage
+\tableofcontents
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Introduccion}
+
+Este documento presenta la descripcion detallada de los casos de uso del sistema
+hibrido de vigilancia docente durante los periodos de recreo y almuerzo. El sistema
+busca garantizar la presencia puntual del docente, promover recorridos activos y
+generar analitica accionable para la prevencion de incidentes.
+
+\subsection{Actores del sistema}
+
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{>{\bfseries\color{azulOscuro}}p{3.8cm} X}
+  \toprule
+  \rowcolor{azulClaro}
+  \color{azulOscuro}Actor & \color{azulOscuro}Descripcion \\
+  \midrule
+  Docente en turno
+    & Recibe notificaciones, realiza check-in, registra recorridos e incidentes,
+      califica la limpieza y puede solicitar reasignacion por impedimento. \\[2pt]
+  \rowcolor{grisFondo}
+  Coordinador de nivel
+    & Visualiza el tablero en tiempo real, recibe alertas por zonas sin cobertura,
+      gestiona reasignaciones y consulta reportes y analitica. \\[2pt]
+  Administrador
+    & Define zonas y checkpoints, carga turnos y asignaciones, y configura reglas
+      operativas (umbrales, escalamiento, gamificacion). \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Convenciones}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{CU-XX}: identificador unico del caso de uso.
+  \item \textbf{Flujo principal}: secuencia de pasos del escenario exitoso.
+  \item \textbf{Flujos alternativos}: variaciones o excepciones del flujo principal.
+  \item \textbf{Precondicion}: estado del sistema antes de ejecutar el caso de uso.
+  \item \textbf{Postcondicion}: estado del sistema tras la ejecucion exitosa.
+\end{itemize}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Turnos y Notificaciones}
+
+\cu{CU-01 --- Asignar turno de vigilancia}{Administrador}{
+  \fcu{Actor principal}{Administrador del sistema}
+  \fcu{Actor secundario}{Docente (notificado)}
+  \fcu{Precondicion}{El administrador ha iniciado sesion. Existe al menos un docente activo y una zona activa.}
+  \fcu{Postcondicion}{El turno queda registrado con estado \textbf{PENDIENTE} y el docente recibe una notificacion de tipo RECORDATORIO.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El administrador accede al modulo de Turnos.
+      \item Selecciona ``Asignar turno''.
+      \item Escoge el docente, la zona, la franja horaria (RECREO / ALMUERZO), la fecha y la hora de inicio y fin.
+      \item Confirma el formulario.
+      \item El sistema crea el turno con estado PENDIENTE.
+      \item El sistema genera una notificacion de tipo RECORDATORIO para el docente asignado.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Docente no disponible:} Si el docente ya tiene un turno activo en la misma franja, el sistema advierte y sugiere otro docente disponible. \\[4pt]
+    \textbf{FA2 --- Datos incompletos:} Si faltan campos obligatorios, el sistema muestra un error y no guarda el registro.
+  }
+  \fcu{Reglas de negocio}{Un docente no puede tener dos turnos activos en la misma franja horaria y zona.}
+}
+
+\cu{CU-02 --- Visualizar calendario de turnos}{Docente / Coordinador / Admin}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El usuario ha iniciado sesion.}
+  \fcu{Postcondicion}{El usuario visualiza los turnos asignados con su estado actual.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El usuario accede al modulo de Turnos.
+      \item El sistema lista los turnos con: docente asignado, zona, franja, fecha/hora y estado (PENDIENTE / EN\_CURSO / CERRADO).
+      \item El usuario puede filtrar por fecha o zona.
+      \item El coordinador visualiza todos los turnos del nivel.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Sin turnos:} El sistema muestra un mensaje indicando que no hay turnos para el filtro seleccionado.
+  }
+  \fcu{Reglas de negocio}{El docente solo ve sus propios turnos. El coordinador y el administrador ven todos.}
+}
+
+\cu{CU-03 --- Recibir recordatorio de turno}{Sistema / Docente}{
+  \fcu{Actor principal}{Sistema (automatico)}
+  \fcu{Actor secundario}{Docente en turno}
+  \fcu{Precondicion}{Existe un turno en estado PENDIENTE proximo a iniciar.}
+  \fcu{Postcondicion}{El docente recibe notificaciones escalonadas con la informacion del turno.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El sistema detecta un turno que iniciara en 10 minutos.
+      \item Envia una notificacion de tipo RECORDATORIO al docente con: zona asignada, hora exacta y boton ``Abrir turno''.
+      \item A los 5 minutos, el sistema envia un segundo recordatorio de urgencia.
+      \item El docente visualiza la notificacion en su bandeja.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Turno ya iniciado:} Si el docente abre el recordatorio despues del inicio, el sistema muestra directamente el boton de check-in.
+  }
+  \fcu{Reglas de negocio}{Las notificaciones se generan automaticamente a los 10 y 5 minutos previos al inicio del turno.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Verificacion de Presencia}
+
+\cu{CU-04 --- Realizar check-in de turno}{Docente}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{Existe un turno en estado PENDIENTE asignado al docente. El docente esta fisicamente en la zona.}
+  \fcu{Postcondicion}{El turno pasa a estado \textbf{EN\_CURSO}. El tablero del coordinador marca la zona como cubierta (verde).}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El docente accede al modulo de Check-ins.
+      \item Selecciona el turno activo pendiente.
+      \item Escanea el codigo QR fijo del punto fisico de la zona.
+      \item El sistema valida el QR y registra el check-in con la marca de tiempo.
+      \item El turno cambia a estado EN\_CURSO.
+      \item El tablero actualiza la zona a estado verde (cubierta).
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Usar PIN:} Si el QR no esta disponible, el docente ingresa el PIN rotativo. El sistema valida y registra el check-in.\\[4pt]
+    \textbf{FA2 --- QR invalido:} El sistema rechaza el check-in y solicita reintento.\\[4pt]
+    \textbf{FA3 --- Turno ya iniciado:} El sistema notifica que el turno ya se encuentra en curso.
+  }
+  \fcu{Reglas de negocio}{Solo se puede hacer check-in dentro de la ventana de tiempo del turno. QR es el metodo principal; PIN y NFC son alternativas.}
+}
+
+\cu{CU-05 --- Alertar por ausencia de cobertura}{Sistema / Coordinador}{
+  \fcu{Actor principal}{Sistema (automatico)}
+  \fcu{Actor secundario}{Coordinador de nivel}
+  \fcu{Precondicion}{Un turno supera el umbral de tiempo (2 min) sin check-in.}
+  \fcu{Postcondicion}{El coordinador recibe una alerta. La zona figura en rojo en el tablero.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El sistema detecta un turno sin check-in despues de 2 minutos del inicio.
+      \item Cambia el estado visual de la zona a rojo (sin cobertura) en el tablero.
+      \item Genera una notificacion de tipo ALERTA al coordinador con: zona, docente asignado y tiempo transcurrido.
+      \item El coordinador visualiza la alerta con el boton de accion rapida ``Reasignar''.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Docente llega tarde:} Si el docente hace check-in despues del umbral, el sistema registra el retraso, actualiza la zona a verde y mantiene la alerta como historico.
+  }
+  \fcu{Reglas de negocio}{El umbral de ausencia es configurable por el administrador. La reasignacion debe completarse en maximo 2 interacciones.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Vigilancia Activa}
+
+\cu{CU-06 --- Registrar recorrido activo}{Docente}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El turno esta en estado EN\_CURSO. Han transcurrido X minutos sin evidencia de recorrido.}
+  \fcu{Postcondicion}{Se registra un CheckIn de tipo recorrido (\texttt{esRecorrido=true}). La metrica de recorridos del docente se actualiza.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El sistema detecta que el docente lleva mas de X minutos sin evidencia de movimiento.
+      \item El sistema muestra el recordatorio ``Confirmar recorrido'' en pantalla.
+      \item El docente se desplaza hasta un checkpoint de la zona.
+      \item Escanea el QR del checkpoint.
+      \item El sistema registra el check-in con \texttt{esRecorrido=true} y actualiza la evidencia de movilidad.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Confirmacion manual:} Si no hay checkpoint disponible, el docente confirma el recorrido manualmente. El sistema lo registra distinguiendolo del escaneo fisico.\\[4pt]
+    \textbf{FA2 --- Sin respuesta:} Si el docente no responde al recordatorio, el coordinador recibe una alerta de vigilancia pasiva.
+  }
+  \fcu{Reglas de negocio}{La confirmacion manual no reemplaza sistematicamente el escaneo fisico. Cada zona debe tener al menos un checkpoint.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Registro de Incidentes}
+
+\cu{CU-07 --- Registrar incidente}{Docente}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El docente tiene un turno en estado EN\_CURSO.}
+  \fcu{Postcondicion}{El incidente queda registrado con tipo, severidad, zona y marca de tiempo. Si la severidad es S3, el coordinador recibe una alerta inmediata.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El docente accede al boton ``Registrar situacion'' desde la pantalla de turno.
+      \item Selecciona el tipo de incidente mediante lista desplegable:
+        \begin{itemize}[itemsep=1pt, topsep=2pt]
+          \item Seguridad fisica (caida, golpe, accidente leve)
+          \item Convivencia (pelea, agresion verbal, intimidacion)
+          \item Uso del espacio (mobiliario, infraestructura, juego peligroso)
+          \item Observacion social
+        \end{itemize}
+      \item Selecciona la severidad: S1 (leve), S2 (requiere seguimiento) o S3 (atencion inmediata).
+      \item Agrega una descripcion breve (opcional).
+      \item Si el tipo es ``Observacion social'', ingresa el curso del estudiante.
+      \item Confirma el registro.
+      \item El sistema guarda el incidente con la zona del turno y la marca de tiempo actual.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Severidad S3:} El sistema genera inmediatamente una notificacion de tipo INCIDENTE al coordinador.\\[4pt]
+    \textbf{FA2 --- Sin turno activo:} Si el docente no tiene turno en curso, puede registrar el incidente asociandolo manualmente a una zona.
+  }
+  \fcu{Reglas de negocio}{No se registra el nombre del estudiante (proteccion de datos). Solo se admite el curso en el tipo SOCIAL. El registro debe completarse en maximo 3 pasos.}
+}
+
+\cu{CU-08 --- Consultar historial de incidentes}{Coordinador / Admin}{
+  \fcu{Actor principal}{Coordinador de nivel}
+  \fcu{Precondicion}{El coordinador ha iniciado sesion.}
+  \fcu{Postcondicion}{El coordinador visualiza el listado de incidentes filtrado segun sus criterios.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El coordinador accede al modulo de Incidentes.
+      \item Aplica filtros: tipo, severidad, zona o franja horaria.
+      \item El sistema muestra el listado con tipo, severidad, zona, docente que reporto y timestamp.
+      \item El coordinador puede seleccionar un incidente para ver su detalle completo.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Sin resultados:} El sistema informa que no existen incidentes para el filtro aplicado.
+  }
+  \fcu{Reglas de negocio}{El coordinador solo ve incidentes de su nivel. El administrador tiene visibilidad global.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Reasignacion}
+
+\cu{CU-09 --- Solicitar reasignacion por impedimento}{Docente}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El docente tiene un turno en estado PENDIENTE o EN\_CURSO y no puede cumplirlo.}
+  \fcu{Postcondicion}{Se crea una Reasignacion en estado PROPUESTA. El docente candidato recibe una notificacion.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El docente presiona el boton ``No puedo llegar al turno''.
+      \item Ingresa el motivo del impedimento.
+      \item El sistema busca candidatos: sin turno en esa franja, con menor carga y cercanos a la zona.
+      \item El sistema propone el candidato mas adecuado automaticamente.
+      \item El candidato recibe una notificacion de tipo REASIGNACION con ventana de aceptacion de 30 a 60 segundos.
+      \item El candidato acepta o rechaza.
+      \item Si acepta, la reasignacion pasa a estado ACEPTADA y el turno queda asignado al nuevo docente.
+      \item El coordinador recibe notificacion del cambio.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Candidato rechaza:} El sistema propone al siguiente candidato disponible y reinicia la ventana de aceptacion.\\[4pt]
+    \textbf{FA2 --- Sin candidatos:} El coordinador recibe una alerta critica para gestionar manualmente.\\[4pt]
+    \textbf{FA3 --- Ventana expirada:} El sistema propone automaticamente al siguiente candidato.
+  }
+  \fcu{Reglas de negocio}{Trazabilidad completa: se registra quien reasigno, motivo, hora de propuesta y hora de aceptacion/rechazo.}
+}
+
+\cu{CU-10 --- Gestionar reasignacion}{Coordinador}{
+  \fcu{Actor principal}{Coordinador de nivel}
+  \fcu{Precondicion}{Existe una reasignacion en estado PROPUESTA o sin candidatos disponibles.}
+  \fcu{Postcondicion}{El coordinador resuelve la cobertura de la zona afectada.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El coordinador visualiza la alerta de reasignacion en el tablero.
+      \item Accede al modulo de Reasignaciones.
+      \item Revisa el turno afectado, el docente original y los candidatos propuestos.
+      \item Asigna manualmente un docente de reemplazo si la propuesta automatica fallo.
+      \item Confirma la reasignacion.
+      \item El sistema actualiza el turno y notifica al docente de reemplazo.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Reasignacion ya resuelta:} El sistema informa que la reasignacion fue aceptada automaticamente.
+  }
+  \fcu{Reglas de negocio}{El coordinador puede sobrescribir la propuesta automatica del sistema en cualquier momento.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Registro de Limpieza}
+
+\cu{CU-11 --- Registrar limpieza al cierre del turno}{Docente}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El turno esta en estado EN\_CURSO. El docente se dispone a cerrarlo.}
+  \fcu{Postcondicion}{Se registra el estado de limpieza de la zona. El turno pasa a estado \textbf{CERRADO}.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El docente accede al modulo de cierre de turno.
+      \item El sistema solicita la escala de limpieza obligatoria:
+        \begin{itemize}[itemsep=1pt, topsep=2pt]
+          \item 1 --- Limpio
+          \item 2 --- Algo de basura
+          \item 3 --- Mucha basura
+          \item 4 --- Critico
+        \end{itemize}
+      \item El docente selecciona la escala correspondiente.
+      \item Agrega una observacion opcional.
+      \item Confirma el cierre.
+      \item El sistema guarda el RegistroLimpieza y cambia el turno a estado CERRADO.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Escala 3 o 4:} El sistema genera una notificacion al coordinador indicando el estado critico de limpieza de la zona.
+  }
+  \fcu{Reglas de negocio}{La escala de limpieza es \textbf{obligatoria} para cerrar el turno. Solo puede existir un registro de limpieza por turno (relacion 1:1).}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Analitica}
+
+\cu{CU-12 --- Consultar mapa de calor de incidentes}{Coordinador / Admin}{
+  \fcu{Actor principal}{Coordinador de nivel}
+  \fcu{Precondicion}{Existen incidentes registrados en el sistema.}
+  \fcu{Postcondicion}{El coordinador visualiza la distribucion de incidentes por zona, franja y tipo.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El coordinador accede al modulo de Analitica --- Mapa de Calor.
+      \item Selecciona el rango de semanas a analizar.
+      \item El sistema muestra una tabla con el porcentaje de incidentes por zona, desglosado por tipo (Fisico, Convivencia, Espacio, Social) y franja (Recreo, Almuerzo).
+      \item Las celdas se colorean segun la intensidad: verde (0), amarillo (1), naranja (2--3), rojo (4+).
+      \item El coordinador identifica las zonas criticas y los patrones temporales.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Sin datos:} El sistema muestra la tabla en blanco con un mensaje informativo.
+  }
+  \fcu{Reglas de negocio}{Los datos del mapa de calor se calculan en tiempo real a partir de los incidentes registrados.}
+}
+
+\cu{CU-13 --- Consultar tablero en vivo}{Coordinador}{
+  \fcu{Actor principal}{Coordinador de nivel}
+  \fcu{Precondicion}{El coordinador ha iniciado sesion. Existen turnos en la franja horaria activa.}
+  \fcu{Postcondicion}{El coordinador visualiza el estado de cobertura de todas las zonas en tiempo real.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El coordinador accede al Dashboard.
+      \item El sistema muestra el tablero con el estado de cada zona:
+        \begin{itemize}[itemsep=1pt, topsep=2pt]
+          \item \textbf{Verde}: zona cubierta (check-in realizado)
+          \item \textbf{Amarillo}: turno proximo a iniciar (en ventana de espera)
+          \item \textbf{Rojo}: zona sin cobertura (sin check-in tras el umbral)
+        \end{itemize}
+      \item El coordinador puede filtrar por franja horaria o zona.
+      \item Por cada zona ve: docente asignado, hora del check-in, estado de recorrido y acceso rapido a ``Reasignar''.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Zona roja:} El coordinador presiona ``Reasignar'' directamente desde el tablero para activar el flujo CU-10 en maximo 2 toques.
+  }
+  \fcu{Reglas de negocio}{El tablero debe reflejar cambios en menos de 3 segundos. Las acciones criticas se resuelven en maximo 2 interacciones.}
+}
+
+\cu{CU-14 --- Ver metricas de gamificacion}{Docente / Coordinador}{
+  \fcu{Actor principal}{Docente en turno}
+  \fcu{Precondicion}{El docente tiene al menos un trimestre de datos registrados.}
+  \fcu{Postcondicion}{El docente visualiza sus indicadores positivos y su posicion en el ranking trimestral.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El docente accede al modulo de Metricas.
+      \item El sistema muestra sus indicadores del trimestre: puntualidad (\%), total de recorridos, calidad del registro (\%), contribucion preventiva (\%) y puntaje total.
+      \item Si el docente tiene reconocimiento trimestral, el sistema lo destaca con una insignia.
+      \item El coordinador puede ver el ranking completo de todos los docentes del nivel.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Sin datos:} El sistema muestra cero en todos los indicadores con un mensaje motivacional.
+  }
+  \fcu{Reglas de negocio}{El enfoque es no punitivo: solo se muestran metricas positivas. Los reconocimientos se otorgan trimestralmente.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Modulo de Configuracion}
+
+\cu{CU-15 --- Gestionar zonas y checkpoints}{Administrador}{
+  \fcu{Actor principal}{Administrador del sistema}
+  \fcu{Precondicion}{El administrador ha iniciado sesion.}
+  \fcu{Postcondicion}{La zona o checkpoint queda creado, modificado o desactivado.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El administrador accede al modulo de Zonas.
+      \item Selecciona ``Nueva zona'' o edita una existente.
+      \item Ingresa nombre, descripcion, capacidad, codigo QR y PIN rotativo.
+      \item Guarda la zona.
+      \item Para agregar checkpoints, accede al modulo de Checkpoints, selecciona la zona y crea los puntos de recorrido con su codigo QR individual.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- QR duplicado:} El sistema rechaza el registro y solicita un codigo unico.\\[4pt]
+    \textbf{FA2 --- Desactivar zona con turnos activos:} El sistema advierte antes de desactivar.
+  }
+  \fcu{Reglas de negocio}{Una zona desactivada no puede recibir nuevos turnos pero conserva el historial de incidentes y metricas.}
+}
+
+\cu{CU-16 --- Gestionar usuarios}{Administrador}{
+  \fcu{Actor principal}{Administrador del sistema}
+  \fcu{Precondicion}{El administrador ha iniciado sesion.}
+  \fcu{Postcondicion}{El usuario queda creado, modificado o desactivado con el rol correcto.}
+  \fcu{Flujo principal}{
+    \begin{pasos}
+      \item El administrador accede al modulo de Usuarios.
+      \item Selecciona ``Nuevo usuario''.
+      \item Ingresa nombre, correo institucional, contrasena y rol (DOCENTE, COORDINADOR o ADMIN).
+      \item Guarda el registro.
+      \item El nuevo usuario puede iniciar sesion con sus credenciales.
+    \end{pasos}
+  }
+  \fcu{Flujos alternativos}{
+    \textbf{FA1 --- Email duplicado:} El sistema rechaza el registro e informa que el correo ya existe.\\[4pt]
+    \textbf{FA2 --- Desactivar usuario:} Los turnos futuros quedan en PENDIENTE y se notifica al coordinador para reasignarlos.
+  }
+  \fcu{Reglas de negocio}{El correo institucional es unico e irrepetible. Un usuario inactivo no recibe notificaciones ni puede iniciar sesion.}
+}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Resumen de Casos de Uso}
+
+\renewcommand{\arraystretch}{1.4}
+\begin{longtable}{>{\bfseries\small\color{azulOscuro}}p{1.6cm} >{\small}p{6cm} >{\small}p{3cm} >{\small}p{3cm}}
+  \toprule
+  \rowcolor{azulOscuro}
+  \color{white}ID &
+  \color{white}Nombre &
+  \color{white}Actor principal &
+  \color{white}Modulo \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \rowcolor{azulOscuro}
+  \color{white}ID &
+  \color{white}Nombre &
+  \color{white}Actor principal &
+  \color{white}Modulo \\
+  \midrule
+  \endhead
+  \bottomrule
+  \endfoot
+
+  CU-01 & Asignar turno de vigilancia & Administrador & Turnos \\
+  \rowcolor{grisFondo}
+  CU-02 & Visualizar calendario de turnos & Docente / Coord. & Turnos \\
+  CU-03 & Recibir recordatorio de turno & Sistema & Notificaciones \\
+  \rowcolor{grisFondo}
+  CU-04 & Realizar check-in de turno & Docente & Verificacion \\
+  CU-05 & Alertar por ausencia de cobertura & Sistema / Coord. & Verificacion \\
+  \rowcolor{grisFondo}
+  CU-06 & Registrar recorrido activo & Docente & Vigilancia activa \\
+  CU-07 & Registrar incidente & Docente & Incidentes \\
+  \rowcolor{grisFondo}
+  CU-08 & Consultar historial de incidentes & Coordinador & Incidentes \\
+  CU-09 & Solicitar reasignacion por impedimento & Docente & Reasignacion \\
+  \rowcolor{grisFondo}
+  CU-10 & Gestionar reasignacion & Coordinador & Reasignacion \\
+  CU-11 & Registrar limpieza al cierre & Docente & Limpieza \\
+  \rowcolor{grisFondo}
+  CU-12 & Consultar mapa de calor & Coordinador & Analitica \\
+  CU-13 & Consultar tablero en vivo & Coordinador & Analitica \\
+  \rowcolor{grisFondo}
+  CU-14 & Ver metricas de gamificacion & Docente / Coord. & Analitica \\
+  CU-15 & Gestionar zonas y checkpoints & Administrador & Configuracion \\
+  \rowcolor{grisFondo}
+  CU-16 & Gestionar usuarios & Administrador & Configuracion \\
+\end{longtable}
+
+\end{document}
