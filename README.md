@@ -182,7 +182,6 @@ vigilancia-docente/
 │       ├── pages/                    ← Una página por módulo
 │       └── services/
 │           └── api.js                ← Axios
-├── diagrama-er.html                  ← Diagrama ER interactivo
 ├── diagrama-er.mermaid               ← Diagrama ER en Mermaid
 └── README.md
 ```
