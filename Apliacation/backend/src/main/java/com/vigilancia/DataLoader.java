@@ -2,8 +2,8 @@ package com.vigilancia;
 
 import com.vigilancia.model.*;
 import com.vigilancia.repository.*;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
@@ -11,12 +11,11 @@ import java.util.List;
 
 /**
  * Batch DataLoader – carga datos iniciales al arrancar la aplicación.
- * Equivale al programa Batch solicitado en el entregable.
  */
 @Component
-@RequiredArgsConstructor
-@Slf4j
 public class DataLoader implements CommandLineRunner {
+
+    private static final Logger log = LoggerFactory.getLogger(DataLoader.class);
 
     private final UsuarioRepository usuarioRepo;
     private final ZonaRepository zonaRepo;
@@ -29,6 +28,19 @@ public class DataLoader implements CommandLineRunner {
     private final NotificacionRepository notifRepo;
     private final MapaCalorRepository mapaCalorRepo;
     private final MetricaDocenteRepository metricaRepo;
+
+    public DataLoader(UsuarioRepository usuarioRepo, ZonaRepository zonaRepo,
+                      TurnoRepository turnoRepo, CheckpointRepository checkpointRepo,
+                      IncidenteRepository incidenteRepo, CheckInRepository checkInRepo,
+                      ReasignacionRepository reasignacionRepo, RegistroLimpiezaRepository limpiezaRepo,
+                      NotificacionRepository notifRepo, MapaCalorRepository mapaCalorRepo,
+                      MetricaDocenteRepository metricaRepo) {
+        this.usuarioRepo = usuarioRepo; this.zonaRepo = zonaRepo; this.turnoRepo = turnoRepo;
+        this.checkpointRepo = checkpointRepo; this.incidenteRepo = incidenteRepo;
+        this.checkInRepo = checkInRepo; this.reasignacionRepo = reasignacionRepo;
+        this.limpiezaRepo = limpiezaRepo; this.notifRepo = notifRepo;
+        this.mapaCalorRepo = mapaCalorRepo; this.metricaRepo = metricaRepo;
+    }
 
     @Override
     public void run(String... args) {
@@ -221,7 +233,6 @@ public class DataLoader implements CommandLineRunner {
                 .contribucionPreventiva(72.0).reconocimiento(false).puntajeTotal(69.5).build());
 
         log.info("Métricas docentes cargadas: {}", metricaRepo.count());
-
         log.info("=== Carga batch completada exitosamente ===");
     }
 }
