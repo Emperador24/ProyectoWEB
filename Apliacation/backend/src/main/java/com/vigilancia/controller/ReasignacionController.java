@@ -26,12 +26,16 @@ public class ReasignacionController {
 
     @GetMapping("/turno/{turnoId}")
     public List<Reasignacion> getByTurno(@PathVariable Long turnoId) {
-        return repo.findByTurnoId(turnoId);
+        return repo.findByTurnoOriginalId(turnoId);
     }
 
     @PostMapping
-    public Reasignacion create(@RequestBody Reasignacion r) { return repo.save(r); }
+    public Reasignacion create(@RequestBody Reasignacion r) {
+        if (r.getEstado() == null) r.setEstado(Enums.EstadoReasignacion.PROPUESTA);
+        return repo.save(r);
+    }
 
+    // El frontend llama: PATCH /api/reasignaciones/{id}/responder?estado=ACEPTADA
     @PatchMapping("/{id}/responder")
     public ResponseEntity<Reasignacion> responder(@PathVariable Long id,
                                                    @RequestParam Enums.EstadoReasignacion estado) {

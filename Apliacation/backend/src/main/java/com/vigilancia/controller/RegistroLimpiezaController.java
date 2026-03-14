@@ -18,23 +18,18 @@ public class RegistroLimpiezaController {
     public List<RegistroLimpieza> getAll() { return repo.findAll(); }
 
     @GetMapping("/turno/{turnoId}")
-    public ResponseEntity<RegistroLimpieza> getByTurno(@PathVariable Long turnoId) {
-        return repo.findByTurnoId(turnoId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public List<RegistroLimpieza> getByTurno(@PathVariable Long turnoId) {
+        return repo.findByTurnoId(turnoId);
     }
 
     @PostMapping
-    public RegistroLimpieza create(@RequestBody RegistroLimpieza rl) { return repo.save(rl); }
+    public RegistroLimpieza create(@RequestBody RegistroLimpieza r) { return repo.save(r); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<RegistroLimpieza> update(@PathVariable Long id,
-                                                    @RequestBody RegistroLimpieza data) {
-        return repo.findById(id).map(rl -> {
-            rl.setEscala(data.getEscala());
-            rl.setObservacion(data.getObservacion());
-            return ResponseEntity.ok(repo.save(rl));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<RegistroLimpieza> update(@PathVariable Long id, @RequestBody RegistroLimpieza r) {
+        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        r.setId(id);
+        return ResponseEntity.ok(repo.save(r));
     }
 
     @DeleteMapping("/{id}")

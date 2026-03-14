@@ -10,7 +10,7 @@ public class RegistroLimpieza {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "turno_id", nullable = false, unique = true)
     private Turno turno;
 
@@ -23,7 +23,7 @@ public class RegistroLimpieza {
 
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "registrado_por_id")
     private Usuario registradoPor;
 

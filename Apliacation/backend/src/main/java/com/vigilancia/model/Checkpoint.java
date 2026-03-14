@@ -9,7 +9,7 @@ public class Checkpoint {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "zona_id", nullable = false)
     private Zona zona;
 

@@ -39,19 +39,32 @@ public class TurnoController {
     }
 
     @PostMapping
-    public Turno create(@RequestBody Turno turno) { return repo.save(turno); }
+    public Turno create(@RequestBody Turno turno) {
+        // Si viene fecha pero no fechaHoraInicio, calcularlo
+        if (turno.getFecha() != null && turno.getFechaHoraInicio() == null) {
+            turno.setFechaHoraInicio(turno.getFecha().atTime(10, 0));
+            turno.setFechaHoraFin(turno.getFecha().atTime(10, 30));
+        }
+        // Si viene fechaHoraInicio pero no fecha, calcularlo
+        if (turno.getFecha() == null && turno.getFechaHoraInicio() != null) {
+            turno.setFecha(turno.getFechaHoraInicio().toLocalDate());
+        }
+        return repo.save(turno);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<Turno> update(@PathVariable Long id, @RequestBody Turno data) {
         return repo.findById(id).map(t -> {
-            t.setFechaHoraInicio(data.getFechaHoraInicio());
-            t.setFechaHoraFin(data.getFechaHoraFin());
-            t.setFranja(data.getFranja());
-            t.setEstado(data.getEstado());
+            if (data.getFecha() != null) t.setFecha(data.getFecha());
+            if (data.getFechaHoraInicio() != null) t.setFechaHoraInicio(data.getFechaHoraInicio());
+            if (data.getFechaHoraFin() != null) t.setFechaHoraFin(data.getFechaHoraFin());
+            if (data.getFranja() != null) t.setFranja(data.getFranja());
+            if (data.getEstado() != null) t.setEstado(data.getEstado());
             return ResponseEntity.ok(repo.save(t));
         }).orElse(ResponseEntity.notFound().build());
     }
 
+    // El frontend llama: PATCH /api/turnos/{id}/estado?estado=EN_CURSO
     @PatchMapping("/{id}/estado")
     public ResponseEntity<Turno> cambiarEstado(@PathVariable Long id,
                                                 @RequestParam Enums.EstadoTurno estado) {

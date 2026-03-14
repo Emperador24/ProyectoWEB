@@ -6,12 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Batch DataLoader – carga datos iniciales al arrancar la aplicación.
- */
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -52,11 +50,11 @@ public class DataLoader implements CommandLineRunner {
                 .password("admin123").rol(Enums.RolUsuario.ADMIN).activo(true).build());
 
         Usuario coord1 = usuarioRepo.save(Usuario.builder()
-                .nombre("Lucía Coordinadora").email("lucia@colegio.edu")
+                .nombre("Ana García").email("ana.garcia@escuela.edu")
                 .password("coord123").rol(Enums.RolUsuario.COORDINADOR).activo(true).build());
 
         Usuario doc1 = usuarioRepo.save(Usuario.builder()
-                .nombre("Andrés Pérez").email("aperez@colegio.edu")
+                .nombre("Carlos Rodríguez").email("carlos.rodriguez@escuela.edu")
                 .password("doc123").rol(Enums.RolUsuario.DOCENTE).activo(true).build());
 
         Usuario doc2 = usuarioRepo.save(Usuario.builder()
@@ -66,6 +64,11 @@ public class DataLoader implements CommandLineRunner {
         Usuario doc3 = usuarioRepo.save(Usuario.builder()
                 .nombre("Felipe Torres").email("ftorres@colegio.edu")
                 .password("doc123").rol(Enums.RolUsuario.DOCENTE).activo(true).build());
+
+        // Usuario director con email de demo
+        Usuario director = usuarioRepo.save(Usuario.builder()
+                .nombre("Roberto Martínez").email("roberto.martinez@escuela.edu")
+                .password("dir123").rol(Enums.RolUsuario.ADMIN).activo(true).build());
 
         log.info("Usuarios cargados: {}", usuarioRepo.count());
 
@@ -89,9 +92,11 @@ public class DataLoader implements CommandLineRunner {
         log.info("Zonas cargadas: {}", zonaRepo.count());
 
         // ---- CHECKPOINTS ----
-        checkpointRepo.save(Checkpoint.builder().zona(zonaPatio).nombre("Entrada Principal")
+        Checkpoint cp1 = checkpointRepo.save(Checkpoint.builder()
+                .zona(zonaPatio).nombre("Entrada Principal")
                 .codigoQR("QR-CP-PATIO-A").descripcion("Acceso patio norte").activo(true).build());
-        checkpointRepo.save(Checkpoint.builder().zona(zonaPatio).nombre("Zona Juegos")
+        Checkpoint cp2 = checkpointRepo.save(Checkpoint.builder()
+                .zona(zonaPatio).nombre("Zona Juegos")
                 .codigoQR("QR-CP-PATIO-B").descripcion("Área de juegos infantiles").activo(true).build());
         checkpointRepo.save(Checkpoint.builder().zona(zonaCafeteria).nombre("Entrada Cafetería")
                 .codigoQR("QR-CP-CAFE-A").descripcion("Puerta de entrada").activo(true).build());
@@ -101,55 +106,82 @@ public class DataLoader implements CommandLineRunner {
         log.info("Checkpoints cargados: {}", checkpointRepo.count());
 
         // ---- TURNOS ----
-        LocalDateTime hoy = LocalDateTime.now().withHour(10).withMinute(0).withSecond(0);
+        // Usamos LocalDate.now() para el campo fecha y LocalDateTime para las horas
+        LocalDate hoy = LocalDate.now();
+        LocalDateTime hoyDT = LocalDateTime.now().withHour(10).withMinute(0).withSecond(0).withNano(0);
 
+        // Turno EN_CURSO hoy — doc1 en Patio
         Turno turno1 = turnoRepo.save(Turno.builder()
                 .usuario(doc1).zona(zonaPatio)
-                .fechaHoraInicio(hoy).fechaHoraFin(hoy.plusMinutes(30))
-                .franja(Enums.FranjaHoraria.RECREO).estado(Enums.EstadoTurno.EN_CURSO).build());
+                .fecha(hoy)
+                .fechaHoraInicio(hoyDT).fechaHoraFin(hoyDT.plusMinutes(30))
+                .franja(Enums.FranjaHoraria.RECREO_MANANA)
+                .estado(Enums.EstadoTurno.EN_CURSO).build());
 
+        // Turno PENDIENTE hoy — doc2 en Cafetería (almuerzo)
         Turno turno2 = turnoRepo.save(Turno.builder()
                 .usuario(doc2).zona(zonaCafeteria)
-                .fechaHoraInicio(hoy.withHour(12)).fechaHoraFin(hoy.withHour(13))
-                .franja(Enums.FranjaHoraria.ALMUERZO).estado(Enums.EstadoTurno.PENDIENTE).build());
+                .fecha(hoy)
+                .fechaHoraInicio(hoyDT.withHour(13)).fechaHoraFin(hoyDT.withHour(13).plusMinutes(30))
+                .franja(Enums.FranjaHoraria.ALMUERZO)
+                .estado(Enums.EstadoTurno.PENDIENTE).build());
 
+        // Turno COMPLETADO hoy — doc3 en Canchas
         Turno turno3 = turnoRepo.save(Turno.builder()
                 .usuario(doc3).zona(zonaCanchas)
-                .fechaHoraInicio(hoy).fechaHoraFin(hoy.plusMinutes(30))
-                .franja(Enums.FranjaHoraria.RECREO).estado(Enums.EstadoTurno.CERRADO).build());
+                .fecha(hoy)
+                .fechaHoraInicio(hoyDT).fechaHoraFin(hoyDT.plusMinutes(30))
+                .franja(Enums.FranjaHoraria.RECREO_MANANA)
+                .estado(Enums.EstadoTurno.COMPLETADO).build());
 
+        // Turno PENDIENTE mañana — doc1 en Corredores
         Turno turno4 = turnoRepo.save(Turno.builder()
                 .usuario(doc1).zona(zonaCorredores)
-                .fechaHoraInicio(hoy.plusDays(1)).fechaHoraFin(hoy.plusDays(1).plusMinutes(30))
-                .franja(Enums.FranjaHoraria.RECREO).estado(Enums.EstadoTurno.PENDIENTE).build());
+                .fecha(hoy.plusDays(1))
+                .fechaHoraInicio(hoyDT.plusDays(1)).fechaHoraFin(hoyDT.plusDays(1).plusMinutes(30))
+                .franja(Enums.FranjaHoraria.RECREO_MANANA)
+                .estado(Enums.EstadoTurno.PENDIENTE).build());
+
+        // Turno PENDIENTE hoy tarde — doc2 en Patio
+        Turno turno5 = turnoRepo.save(Turno.builder()
+                .usuario(doc2).zona(zonaPatio)
+                .fecha(hoy)
+                .fechaHoraInicio(hoyDT.withHour(15)).fechaHoraFin(hoyDT.withHour(15).plusMinutes(30))
+                .franja(Enums.FranjaHoraria.RECREO_TARDE)
+                .estado(Enums.EstadoTurno.PENDIENTE).build());
 
         log.info("Turnos cargados: {}", turnoRepo.count());
 
         // ---- INCIDENTES ----
+        // reportadoPor debe ser un usuario válido — usamos doc1 que tiene turno activo
         incidenteRepo.save(Incidente.builder()
                 .turno(turno1).zona(zonaPatio).reportadoPor(doc1)
                 .tipo(Enums.TipoIncidente.FISICO).severidad(Enums.SeveridadIncidente.S1)
                 .descripcion("Caída leve durante juego, sin lesión visible")
-                .timestamp(LocalDateTime.now().minusMinutes(20)).build());
+                .fechaHora(LocalDateTime.now().minusMinutes(20))
+                .estado("PENDIENTE").build());
 
         incidenteRepo.save(Incidente.builder()
                 .turno(turno1).zona(zonaPatio).reportadoPor(doc1)
                 .tipo(Enums.TipoIncidente.CONVIVENCIA).severidad(Enums.SeveridadIncidente.S2)
                 .descripcion("Discusión entre estudiantes, fue mediada por el docente")
-                .timestamp(LocalDateTime.now().minusMinutes(10)).build());
+                .fechaHora(LocalDateTime.now().minusMinutes(10))
+                .estado("EN_PROCESO").build());
 
         incidenteRepo.save(Incidente.builder()
                 .turno(turno3).zona(zonaCanchas).reportadoPor(doc3)
                 .tipo(Enums.TipoIncidente.ESPACIO).severidad(Enums.SeveridadIncidente.S1)
                 .descripcion("Uso inadecuado del mobiliario deportivo")
-                .timestamp(LocalDateTime.now().minusHours(1)).build());
+                .fechaHora(LocalDateTime.now().minusHours(1))
+                .estado("RESUELTO").build());
 
         incidenteRepo.save(Incidente.builder()
                 .turno(turno2).zona(zonaCafeteria).reportadoPor(doc2)
                 .tipo(Enums.TipoIncidente.SOCIAL).severidad(Enums.SeveridadIncidente.S3)
-                .descripcion("Posible situación de exclusión social")
+                .descripcion("Posible situación de exclusión social en el comedor")
                 .cursoEstudiante("Grado 7B")
-                .timestamp(LocalDateTime.now().minusMinutes(5)).build());
+                .fechaHora(LocalDateTime.now().minusMinutes(5))
+                .estado("PENDIENTE").build());
 
         log.info("Incidentes cargados: {}", incidenteRepo.count());
 
@@ -158,11 +190,11 @@ public class DataLoader implements CommandLineRunner {
         if (!cps.isEmpty()) {
             checkInRepo.save(CheckIn.builder().turno(turno1).checkpoint(cps.get(0))
                     .metodo(Enums.MetodoCheckIn.QR).esRecorrido(false)
-                    .timestamp(hoy.plusMinutes(1)).build());
+                    .timestamp(hoyDT.plusMinutes(1)).build());
             if (cps.size() > 1) {
                 checkInRepo.save(CheckIn.builder().turno(turno1).checkpoint(cps.get(1))
                         .metodo(Enums.MetodoCheckIn.QR).esRecorrido(true)
-                        .timestamp(hoy.plusMinutes(10)).build());
+                        .timestamp(hoyDT.plusMinutes(10)).build());
             }
         }
 
@@ -170,7 +202,7 @@ public class DataLoader implements CommandLineRunner {
 
         // ---- REASIGNACIONES ----
         reasignacionRepo.save(Reasignacion.builder()
-                .turno(turno4).docenteOriginal(doc1).docenteReemplazo(doc2)
+                .turnoOriginal(turno4).docenteOriginal(doc1).docenteReemplazo(doc2)
                 .motivo("Incapacidad médica")
                 .estado(Enums.EstadoReasignacion.ACEPTADA)
                 .timestampPropuesta(LocalDateTime.now().minusHours(2))
@@ -190,7 +222,7 @@ public class DataLoader implements CommandLineRunner {
         notifRepo.save(Notificacion.builder().usuario(doc1).turno(turno1)
                 .tipo(Enums.TipoNotificacion.RECORDATORIO)
                 .mensaje("Tu turno en Patio Principal inicia en 10 minutos").leida(true)
-                .timestamp(hoy.minusMinutes(10)).build());
+                .timestamp(hoyDT.minusMinutes(10)).build());
 
         notifRepo.save(Notificacion.builder().usuario(coord1).turno(turno2)
                 .tipo(Enums.TipoNotificacion.ALERTA)
@@ -205,16 +237,16 @@ public class DataLoader implements CommandLineRunner {
         log.info("Notificaciones cargadas: {}", notifRepo.count());
 
         // ---- MAPA DE CALOR ----
-        String semanaActual = "2026-W10";
-        mapaCalorRepo.save(MapaCalor.builder().zona(zonaPatio).franja(Enums.FranjaHoraria.RECREO)
+        String semanaActual = "2026-W11";
+        mapaCalorRepo.save(MapaCalor.builder().zona(zonaPatio).franja(Enums.FranjaHoraria.RECREO_MANANA)
                 .tipoIncidente(Enums.TipoIncidente.FISICO).totalIncidentes(5).porcentaje(41.7).semana(semanaActual).build());
-        mapaCalorRepo.save(MapaCalor.builder().zona(zonaPatio).franja(Enums.FranjaHoraria.RECREO)
+        mapaCalorRepo.save(MapaCalor.builder().zona(zonaPatio).franja(Enums.FranjaHoraria.RECREO_MANANA)
                 .tipoIncidente(Enums.TipoIncidente.CONVIVENCIA).totalIncidentes(4).porcentaje(33.3).semana(semanaActual).build());
-        mapaCalorRepo.save(MapaCalor.builder().zona(zonaCanchas).franja(Enums.FranjaHoraria.RECREO)
+        mapaCalorRepo.save(MapaCalor.builder().zona(zonaCanchas).franja(Enums.FranjaHoraria.RECREO_MANANA)
                 .tipoIncidente(Enums.TipoIncidente.FISICO).totalIncidentes(3).porcentaje(25.0).semana(semanaActual).build());
         mapaCalorRepo.save(MapaCalor.builder().zona(zonaCafeteria).franja(Enums.FranjaHoraria.ALMUERZO)
                 .tipoIncidente(Enums.TipoIncidente.CONVIVENCIA).totalIncidentes(2).porcentaje(16.7).semana(semanaActual).build());
-        mapaCalorRepo.save(MapaCalor.builder().zona(zonaCorredores).franja(Enums.FranjaHoraria.RECREO)
+        mapaCalorRepo.save(MapaCalor.builder().zona(zonaCorredores).franja(Enums.FranjaHoraria.RECREO_MANANA)
                 .tipoIncidente(Enums.TipoIncidente.ESPACIO).totalIncidentes(1).porcentaje(8.3).semana(semanaActual).build());
 
         log.info("Registros mapa de calor cargados: {}", mapaCalorRepo.count());

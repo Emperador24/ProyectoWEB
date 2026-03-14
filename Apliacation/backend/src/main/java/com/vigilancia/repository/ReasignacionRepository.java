@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface ReasignacionRepository extends JpaRepository<Reasignacion, Long> {
-    List<Reasignacion> findByTurnoId(Long turnoId);
+    List<Reasignacion> findByTurnoOriginalId(Long turnoId);
     List<Reasignacion> findByDocenteOriginalId(Long usuarioId);
     List<Reasignacion> findByDocenteReemplazoId(Long usuarioId);
     List<Reasignacion> findByEstado(Enums.EstadoReasignacion estado);

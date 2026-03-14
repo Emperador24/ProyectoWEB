@@ -28,17 +28,13 @@ public class CheckpointController {
     }
 
     @PostMapping
-    public Checkpoint create(@RequestBody Checkpoint cp) { return repo.save(cp); }
+    public Checkpoint create(@RequestBody Checkpoint c) { return repo.save(c); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Checkpoint> update(@PathVariable Long id, @RequestBody Checkpoint data) {
-        return repo.findById(id).map(cp -> {
-            cp.setNombre(data.getNombre());
-            cp.setCodigoQR(data.getCodigoQR());
-            cp.setDescripcion(data.getDescripcion());
-            cp.setActivo(data.getActivo());
-            return ResponseEntity.ok(repo.save(cp));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Checkpoint> update(@PathVariable Long id, @RequestBody Checkpoint c) {
+        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        c.setId(id);
+        return ResponseEntity.ok(repo.save(c));
     }
 
     @DeleteMapping("/{id}")

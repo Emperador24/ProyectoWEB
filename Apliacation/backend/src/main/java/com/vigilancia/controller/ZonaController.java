@@ -2,7 +2,6 @@ package com.vigilancia.controller;
 
 import com.vigilancia.model.Zona;
 import com.vigilancia.repository.ZonaRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ public class ZonaController {
     public List<Zona> getAll() { return repo.findAll(); }
 
     @GetMapping("/activas")
-    public List<Zona> getActivas() { return repo.findByActivaTrue(); }
+    public List<Zona> getActivas() { return repo.findByActiva(true); }
 
     @GetMapping("/{id}")
     public ResponseEntity<Zona> getById(@PathVariable Long id) {
@@ -27,19 +26,13 @@ public class ZonaController {
     }
 
     @PostMapping
-    public Zona create(@Valid @RequestBody Zona zona) { return repo.save(zona); }
+    public Zona create(@RequestBody Zona z) { return repo.save(z); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Zona> update(@PathVariable Long id, @RequestBody Zona data) {
-        return repo.findById(id).map(z -> {
-            z.setNombre(data.getNombre());
-            z.setDescripcion(data.getDescripcion());
-            z.setCapacidad(data.getCapacidad());
-            z.setCodigoQR(data.getCodigoQR());
-            z.setPinRotativo(data.getPinRotativo());
-            z.setActiva(data.getActiva());
-            return ResponseEntity.ok(repo.save(z));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Zona> update(@PathVariable Long id, @RequestBody Zona z) {
+        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        z.setId(id);
+        return ResponseEntity.ok(repo.save(z));
     }
 
     @DeleteMapping("/{id}")

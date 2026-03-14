@@ -1,5 +1,4 @@
 package com.vigilancia.repository;
-
 import com.vigilancia.model.Notificacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

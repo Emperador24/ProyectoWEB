@@ -18,36 +18,22 @@ public class MetricaDocenteController {
     public List<MetricaDocente> getAll() { return repo.findAll(); }
 
     @GetMapping("/usuario/{uid}")
-    public ResponseEntity<MetricaDocente> getByUsuario(@PathVariable Long uid) {
-        return repo.findByUsuarioId(uid)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public List<MetricaDocente> getByUsuario(@PathVariable Long uid) {
+        return repo.findByUsuarioId(uid);
     }
 
     @GetMapping("/reconocidos")
-    public List<MetricaDocente> getReconocidos() { return repo.findByReconocimientoTrue(); }
-
-    @PostMapping
-    public MetricaDocente create(@RequestBody MetricaDocente md) { return repo.save(md); }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<MetricaDocente> update(@PathVariable Long id,
-                                                  @RequestBody MetricaDocente data) {
-        return repo.findById(id).map(md -> {
-            md.setPuntualidad(data.getPuntualidad());
-            md.setTotalRecorridos(data.getTotalRecorridos());
-            md.setCalidadRegistro(data.getCalidadRegistro());
-            md.setContribucionPreventiva(data.getContribucionPreventiva());
-            md.setReconocimiento(data.getReconocimiento());
-            md.setPuntajeTotal(data.getPuntajeTotal());
-            return ResponseEntity.ok(repo.save(md));
-        }).orElse(ResponseEntity.notFound().build());
+    public List<MetricaDocente> getReconocidos() {
+        return repo.findByReconocimientoTrue();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    @PostMapping
+    public MetricaDocente create(@RequestBody MetricaDocente m) { return repo.save(m); }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MetricaDocente> update(@PathVariable Long id, @RequestBody MetricaDocente m) {
         if (!repo.existsById(id)) return ResponseEntity.notFound().build();
-        repo.deleteById(id);
-        return ResponseEntity.noContent().build();
+        m.setId(id);
+        return ResponseEntity.ok(repo.save(m));
     }
 }

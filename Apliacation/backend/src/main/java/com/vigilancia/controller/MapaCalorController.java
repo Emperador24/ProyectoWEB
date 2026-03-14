@@ -28,21 +28,12 @@ public class MapaCalorController {
     }
 
     @PostMapping
-    public MapaCalor create(@RequestBody MapaCalor mc) { return repo.save(mc); }
+    public MapaCalor create(@RequestBody MapaCalor m) { return repo.save(m); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MapaCalor> update(@PathVariable Long id, @RequestBody MapaCalor data) {
-        return repo.findById(id).map(mc -> {
-            mc.setTotalIncidentes(data.getTotalIncidentes());
-            mc.setPorcentaje(data.getPorcentaje());
-            return ResponseEntity.ok(repo.save(mc));
-        }).orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<MapaCalor> update(@PathVariable Long id, @RequestBody MapaCalor m) {
         if (!repo.existsById(id)) return ResponseEntity.notFound().build();
-        repo.deleteById(id);
-        return ResponseEntity.noContent().build();
+        m.setId(id);
+        return ResponseEntity.ok(repo.save(m));
     }
 }

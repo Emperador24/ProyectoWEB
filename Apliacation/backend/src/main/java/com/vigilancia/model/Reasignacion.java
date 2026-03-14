@@ -10,15 +10,16 @@ public class Reasignacion {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // El frontend envía { turnoOriginal: { id: ... } }
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "turno_id", nullable = false)
-    private Turno turno;
+    private Turno turnoOriginal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "docente_original_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "docente_original_id")
     private Usuario docenteOriginal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "docente_reemplazo_id")
     private Usuario docenteReemplazo;
 
@@ -36,13 +37,15 @@ public class Reasignacion {
 
     public static Builder builder() { return new Builder(); }
     public static class Builder {
-        private Long id; private Turno turno; private Usuario docenteOriginal;
+        private Long id; private Turno turnoOriginal; private Usuario docenteOriginal;
         private Usuario docenteReemplazo; private String motivo;
         private Enums.EstadoReasignacion estado = Enums.EstadoReasignacion.PROPUESTA;
         private LocalDateTime timestampPropuesta = LocalDateTime.now();
         private LocalDateTime timestampRespuesta;
+
         public Builder id(Long id) { this.id = id; return this; }
-        public Builder turno(Turno turno) { this.turno = turno; return this; }
+        public Builder turno(Turno turno) { this.turnoOriginal = turno; return this; }
+        public Builder turnoOriginal(Turno turno) { this.turnoOriginal = turno; return this; }
         public Builder docenteOriginal(Usuario u) { this.docenteOriginal = u; return this; }
         public Builder docenteReemplazo(Usuario u) { this.docenteReemplazo = u; return this; }
         public Builder motivo(String motivo) { this.motivo = motivo; return this; }
@@ -50,7 +53,7 @@ public class Reasignacion {
         public Builder timestampPropuesta(LocalDateTime t) { this.timestampPropuesta = t; return this; }
         public Builder timestampRespuesta(LocalDateTime t) { this.timestampRespuesta = t; return this; }
         public Reasignacion build() {
-            Reasignacion r = new Reasignacion(); r.id = id; r.turno = turno;
+            Reasignacion r = new Reasignacion(); r.id = id; r.turnoOriginal = turnoOriginal;
             r.docenteOriginal = docenteOriginal; r.docenteReemplazo = docenteReemplazo;
             r.motivo = motivo; r.estado = estado; r.timestampPropuesta = timestampPropuesta;
             r.timestampRespuesta = timestampRespuesta; return r;
@@ -59,8 +62,11 @@ public class Reasignacion {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-    public Turno getTurno() { return turno; }
-    public void setTurno(Turno turno) { this.turno = turno; }
+    public Turno getTurnoOriginal() { return turnoOriginal; }
+    public void setTurnoOriginal(Turno t) { this.turnoOriginal = t; }
+    // Alias para compatibilidad
+    public Turno getTurno() { return turnoOriginal; }
+    public void setTurno(Turno t) { this.turnoOriginal = t; }
     public Usuario getDocenteOriginal() { return docenteOriginal; }
     public void setDocenteOriginal(Usuario u) { this.docenteOriginal = u; }
     public Usuario getDocenteReemplazo() { return docenteReemplazo; }

@@ -24,11 +24,11 @@ public class CheckInController {
 
     @GetMapping("/turno/{turnoId}/recorridos")
     public List<CheckIn> getRecorridos(@PathVariable Long turnoId) {
-        return repo.findByTurnoIdAndEsRecorridoTrue(turnoId);
+        return repo.findByTurnoIdAndEsRecorrido(turnoId, true);
     }
 
     @PostMapping
-    public CheckIn create(@RequestBody CheckIn checkIn) { return repo.save(checkIn); }
+    public CheckIn create(@RequestBody CheckIn c) { return repo.save(c); }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

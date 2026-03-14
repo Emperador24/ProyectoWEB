@@ -3,7 +3,6 @@ package com.vigilancia.controller;
 import com.vigilancia.model.Enums;
 import com.vigilancia.model.Usuario;
 import com.vigilancia.repository.UsuarioRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,7 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getById(@PathVariable Long id) {
-        return repo.findById(id).map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/rol/{rol}")
@@ -31,19 +29,13 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario create(@Valid @RequestBody Usuario usuario) {
-        return repo.save(usuario);
-    }
+    public Usuario create(@RequestBody Usuario u) { return repo.save(u); }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> update(@PathVariable Long id, @Valid @RequestBody Usuario data) {
-        return repo.findById(id).map(u -> {
-            u.setNombre(data.getNombre());
-            u.setEmail(data.getEmail());
-            u.setRol(data.getRol());
-            u.setActivo(data.getActivo());
-            return ResponseEntity.ok(repo.save(u));
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Usuario> update(@PathVariable Long id, @RequestBody Usuario u) {
+        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        u.setId(id);
+        return ResponseEntity.ok(repo.save(u));
     }
 
     @DeleteMapping("/{id}")

@@ -1,6 +1,20 @@
 import axios from 'axios'
 
-const api = axios.create({ baseURL: '/api' })
+// El proxy de Vite redirige /api → http://localhost:8080
+// Así que todas las rutas van como /api/...
+const api = axios.create({
+  baseURL: '/api',
+  headers: { 'Content-Type': 'application/json' },
+})
+
+// Interceptor: loguea errores para facilitar debugging
+api.interceptors.response.use(
+  res => res,
+  err => {
+    console.error('[API Error]', err.config?.url, err.response?.status, err.response?.data)
+    return Promise.reject(err)
+  }
+)
 
 export const usuariosApi = {
   getAll: () => api.get('/usuarios'),
@@ -28,6 +42,7 @@ export const turnosApi = {
   getByEstado: (estado) => api.get(`/turnos/estado/${estado}`),
   create: (data) => api.post('/turnos', data),
   update: (id, data) => api.put(`/turnos/${id}`, data),
+  // PATCH /api/turnos/{id}/estado?estado=EN_CURSO
   cambiarEstado: (id, estado) => api.patch(`/turnos/${id}/estado?estado=${estado}`),
   delete: (id) => api.delete(`/turnos/${id}`),
 }
@@ -37,6 +52,7 @@ export const incidentesApi = {
   getById: (id) => api.get(`/incidentes/${id}`),
   getByZona: (zid) => api.get(`/incidentes/zona/${zid}`),
   getByTipo: (tipo) => api.get(`/incidentes/tipo/${tipo}`),
+  getBySeveridad: (sev) => api.get(`/incidentes/severidad/${sev}`),
   create: (data) => api.post('/incidentes', data),
   update: (id, data) => api.put(`/incidentes/${id}`, data),
   delete: (id) => api.delete(`/incidentes/${id}`),
@@ -45,6 +61,7 @@ export const incidentesApi = {
 export const checkinsApi = {
   getAll: () => api.get('/checkins'),
   getByTurno: (tid) => api.get(`/checkins/turno/${tid}`),
+  getRecorridos: (tid) => api.get(`/checkins/turno/${tid}/recorridos`),
   create: (data) => api.post('/checkins', data),
   delete: (id) => api.delete(`/checkins/${id}`),
 }
@@ -54,6 +71,7 @@ export const reasignacionesApi = {
   getById: (id) => api.get(`/reasignaciones/${id}`),
   getByTurno: (tid) => api.get(`/reasignaciones/turno/${tid}`),
   create: (data) => api.post('/reasignaciones', data),
+  // PATCH /api/reasignaciones/{id}/responder?estado=ACEPTADA
   responder: (id, estado) => api.patch(`/reasignaciones/${id}/responder?estado=${estado}`),
   delete: (id) => api.delete(`/reasignaciones/${id}`),
 }
@@ -79,6 +97,7 @@ export const mapaCalorApi = {
   getByZona: (zid) => api.get(`/mapa-calor/zona/${zid}`),
   getBySemana: (semana) => api.get(`/mapa-calor/semana/${semana}`),
   create: (data) => api.post('/mapa-calor', data),
+  update: (id, data) => api.put(`/mapa-calor/${id}`, data),
 }
 
 export const metricasApi = {
@@ -92,6 +111,7 @@ export const metricasApi = {
 export const checkpointsApi = {
   getAll: () => api.get('/checkpoints'),
   getByZona: (zid) => api.get(`/checkpoints/zona/${zid}`),
+  getById: (id) => api.get(`/checkpoints/${id}`),
   create: (data) => api.post('/checkpoints', data),
   update: (id, data) => api.put(`/checkpoints/${id}`, data),
   delete: (id) => api.delete(`/checkpoints/${id}`),
