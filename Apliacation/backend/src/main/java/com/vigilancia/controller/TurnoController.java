@@ -1,11 +1,15 @@
 package com.vigilancia.controller;
 
+import com.vigilancia.exception.ResourceNotFoundException;
 import com.vigilancia.model.Enums;
 import com.vigilancia.model.Turno;
 import com.vigilancia.repository.TurnoRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,18 +23,19 @@ public class TurnoController {
     public List<Turno> getAll() { return repo.findAll(); }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Turno> getById(@PathVariable Long id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    public Turno getById(@PathVariable Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public List<Turno> getByUsuario(@PathVariable Long usuarioId) {
-        return repo.findByUsuarioId(usuarioId);
+    @GetMapping("/usuario/{uid}")
+    public List<Turno> getByUsuario(@PathVariable Long uid) {
+        return repo.findByUsuarioId(uid);
     }
 
-    @GetMapping("/zona/{zonaId}")
-    public List<Turno> getByZona(@PathVariable Long zonaId) {
-        return repo.findByZonaId(zonaId);
+    @GetMapping("/zona/{zid}")
+    public List<Turno> getByZona(@PathVariable Long zid) {
+        return repo.findByZonaId(zid);
     }
 
     @GetMapping("/estado/{estado}")
@@ -38,45 +43,44 @@ public class TurnoController {
         return repo.findByEstado(estado);
     }
 
+    @GetMapping("/fecha/{fecha}")
+    public List<Turno> getByFecha(@PathVariable String fecha) {
+        return repo.findByFecha(LocalDate.parse(fecha));
+    }
+
     @PostMapping
-    public Turno create(@RequestBody Turno turno) {
-        // Si viene fecha pero no fechaHoraInicio, calcularlo
-        if (turno.getFecha() != null && turno.getFechaHoraInicio() == null) {
-            turno.setFechaHoraInicio(turno.getFecha().atTime(10, 0));
-            turno.setFechaHoraFin(turno.getFecha().atTime(10, 30));
+    public ResponseEntity<Turno> create(@Valid @RequestBody Turno t) {
+        // Si viene fechaHoraInicio pero no fecha, calcula fecha automáticamente
+        if (t.getFecha() == null && t.getFechaHoraInicio() != null) {
+            t.setFecha(t.getFechaHoraInicio().toLocalDate());
         }
-        // Si viene fechaHoraInicio pero no fecha, calcularlo
-        if (turno.getFecha() == null && turno.getFechaHoraInicio() != null) {
-            turno.setFecha(turno.getFechaHoraInicio().toLocalDate());
-        }
-        return repo.save(turno);
+        return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(t));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Turno> update(@PathVariable Long id, @RequestBody Turno data) {
-        return repo.findById(id).map(t -> {
-            if (data.getFecha() != null) t.setFecha(data.getFecha());
-            if (data.getFechaHoraInicio() != null) t.setFechaHoraInicio(data.getFechaHoraInicio());
-            if (data.getFechaHoraFin() != null) t.setFechaHoraFin(data.getFechaHoraFin());
-            if (data.getFranja() != null) t.setFranja(data.getFranja());
-            if (data.getEstado() != null) t.setEstado(data.getEstado());
-            return ResponseEntity.ok(repo.save(t));
-        }).orElse(ResponseEntity.notFound().build());
+    public Turno update(@PathVariable Long id, @Valid @RequestBody Turno t) {
+        if (!repo.existsById(id))
+            throw new ResourceNotFoundException("Turno no encontrado con id: " + id);
+        t.setId(id);
+        if (t.getFecha() == null && t.getFechaHoraInicio() != null) {
+            t.setFecha(t.getFechaHoraInicio().toLocalDate());
+        }
+        return repo.save(t);
     }
 
-    // El frontend llama: PATCH /api/turnos/{id}/estado?estado=EN_CURSO
     @PatchMapping("/{id}/estado")
-    public ResponseEntity<Turno> cambiarEstado(@PathVariable Long id,
-                                                @RequestParam Enums.EstadoTurno estado) {
-        return repo.findById(id).map(t -> {
-            t.setEstado(estado);
-            return ResponseEntity.ok(repo.save(t));
-        }).orElse(ResponseEntity.notFound().build());
+    public Turno cambiarEstado(@PathVariable Long id,
+                               @RequestParam Enums.EstadoTurno estado) {
+        Turno t = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
+        t.setEstado(estado);
+        return repo.save(t);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repo.existsById(id)) return ResponseEntity.notFound().build();
+        if (!repo.existsById(id))
+            throw new ResourceNotFoundException("Turno no encontrado con id: " + id);
         repo.deleteById(id);
         return ResponseEntity.noContent().build();
     }

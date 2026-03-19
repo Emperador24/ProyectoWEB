@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Incidente</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div class="cabecera-pagina">
+        <h1>Detalle del Incidente</h1>
+        <a th:href="@{/incidentes}" class="btn btn-secundario">← Volver</a>
+    </div>
+
+    <div class="tarjeta">
+        <div class="campo-detalle">
+            <span class="etiqueta">ID:</span>
+            <span th:text="${incidente.id}">1</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Tipo:</span>
+            <span th:text="${incidente.tipo}">TIPO</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Severidad:</span>
+            <span class="badge"
+                  th:classappend="${incidente.severidad?.name() == 'S3'} ? 'badge-rojo' :
+                                  (${incidente.severidad?.name() == 'S2'} ? 'badge-amarillo' : 'badge-verde')"
+                  th:text="${incidente.severidad}">S1</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Zona:</span>
+            <span th:text="${incidente.zona?.nombre}">Zona</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Turno:</span>
+            <span th:text="${incidente.turno?.id != null ? 'Turno #' + incidente.turno.id : 'Sin turno'}">-</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Reportado por:</span>
+            <span th:text="${incidente.reportadoPor?.nombre ?: 'No especificado'}">Docente</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Descripción:</span>
+            <span th:text="${incidente.descripcion}">Descripción del incidente.</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Curso estudiante:</span>
+            <span th:text="${incidente.cursoEstudiante ?: 'No especificado'}">Grado 7B</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Estado:</span>
+            <span th:text="${incidente.estado}">PENDIENTE</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Fecha y hora:</span>
+            <span th:text="${#temporals.format(incidente.fechaHora, 'dd/MM/yyyy HH:mm')}">01/01/2026</span>
+        </div>
+    </div>
+
+    <div class="acciones-detalle">
+        <form th:action="@{/incidentes/{id}/eliminar(id=${incidente.id})}" method="post"
+              onsubmit="return confirm('¿Eliminar este incidente?')">
+            <button type="submit" class="btn btn-peligro">Eliminar</button>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

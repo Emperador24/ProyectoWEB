@@ -1,6 +1,8 @@
 package com.vigilancia.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,6 +16,7 @@ public class Incidente {
     @JoinColumn(name = "turno_id")
     private Turno turno;
 
+    @NotNull(message = "La zona es obligatoria")
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "zona_id", nullable = false)
     private Zona zona;
@@ -22,24 +25,25 @@ public class Incidente {
     @JoinColumn(name = "reportado_por_id", nullable = true)
     private Usuario reportadoPor;
 
+    @NotNull(message = "El tipo de incidente es obligatorio")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Enums.TipoIncidente tipo;
 
+    @NotNull(message = "La severidad es obligatoria")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Enums.SeveridadIncidente severidad;
 
+    @NotBlank(message = "La descripción es obligatoria")
     @Column(length = 1000)
     private String descripcion;
 
     private String cursoEstudiante;
 
-    // El frontend usa 'fechaHora' para filtrar y mostrar
     @Column(nullable = false)
     private LocalDateTime fechaHora = LocalDateTime.now();
 
-    // Estado del incidente (frontend usa PENDIENTE, EN_PROCESO, RESUELTO)
     private String estado = "PENDIENTE";
 
     public Incidente() {}
@@ -62,7 +66,6 @@ public class Incidente {
         public Builder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
         public Builder cursoEstudiante(String c) { this.cursoEstudiante = c; return this; }
         public Builder fechaHora(LocalDateTime t) { this.fechaHora = t; return this; }
-        // Alias para compatibilidad con DataLoader que usa timestamp
         public Builder timestamp(LocalDateTime t) { this.fechaHora = t; return this; }
         public Builder estado(String estado) { this.estado = estado; return this; }
         public Incidente build() {

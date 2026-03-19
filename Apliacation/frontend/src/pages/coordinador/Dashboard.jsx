@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { turnosApi, incidentesApi, zonasApi, usuariosApi } from '../../services/api'
 
 export default function CoordDashboard() {
@@ -8,6 +9,7 @@ export default function CoordDashboard() {
   const [usuarios, setUsuarios] = useState([])
   const [loading, setLoading] = useState(true)
   const [filtroFranja, setFiltroFranja] = useState('TODOS')
+  const navigate = useNavigate()
 
   const hoy = new Date().toISOString().slice(0, 10)
 
@@ -34,7 +36,6 @@ export default function CoordDashboard() {
   const incHoy = incidentes.filter(i => i.fechaHora?.slice(0, 10) === hoy)
   const puntualidad = turnosHoy.length ? Math.round((cubiertos / turnosHoy.length) * 100) : 0
 
-  // Armar vista de zonas con estado real
   const zonasConEstado = zonas.map(zona => {
     const turno = turnosFiltrados.find(t => t.zona?.id === zona.id)
     if (!turno) return { ...zona, estado: 'SIN_TURNO', docente: null, hora: null, turnoId: null }
@@ -44,8 +45,17 @@ export default function CoordDashboard() {
     return { ...zona, estado: turno.estado || 'PENDIENTE', docente: turno.usuario, hora, turnoId: turno.id }
   })
 
-  const cardCls = (estado) => estado === 'EN_CURSO' || estado === 'COMPLETADO' ? 'covered' : estado === 'PENDIENTE' ? 'warning' : 'danger'
-  const cardLabel = (estado) => estado === 'EN_CURSO' || estado === 'COMPLETADO' ? '✓ Cubierta' : estado === 'PENDIENTE' ? '⏱ Por iniciar' : '⚠ Sin cubrir'
+  const cardCls   = (estado) => estado === 'EN_CURSO' || estado === 'COMPLETADO' ? 'covered' : estado === 'PENDIENTE' ? 'warning' : 'danger'
+  const cardLabel = (estado) => estado === 'EN_CURSO' || estado === 'COMPLETADO' ? '✓ Cubierta'  : estado === 'PENDIENTE' ? '⏱ Por iniciar' : '⚠ Sin cubrir'
+
+  // Navega a Reasignaciones pasando el turnoId por query param
+  const handleReasignar = (turnoId) => {
+    if (turnoId) {
+      navigate(`/reasignaciones?turnoId=${turnoId}`)
+    } else {
+      navigate('/reasignaciones')
+    }
+  }
 
   if (loading) return <div style={{ padding: 60, textAlign: 'center', color: '#9ca3af', fontSize: 16 }}>Cargando tablero...</div>
 
@@ -127,7 +137,13 @@ export default function CoordDashboard() {
                 <span>🕐</span>
                 <span>Check-in: <strong>{z.hora || '—'}</strong></span>
               </div>
-              <button className="reassign-btn">🔄 Reasignar</button>
+              {/* Botón funcional que navega a Reasignaciones con el turno preseleccionado */}
+              <button
+                className="reassign-btn"
+                onClick={() => handleReasignar(z.turnoId)}
+              >
+                🔄 Reasignar
+              </button>
             </div>
           ))}
         </div>

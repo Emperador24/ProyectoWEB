@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Turno</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div class="cabecera-pagina">
+        <h1>Detalle del Turno</h1>
+        <a th:href="@{/turnos}" class="btn btn-secundario">← Volver</a>
+    </div>
+
+    <div class="tarjeta">
+        <div class="campo-detalle">
+            <span class="etiqueta">ID:</span>
+            <span th:text="${turno.id}">1</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Docente:</span>
+            <span th:text="${turno.usuario?.nombre}">Nombre</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Email:</span>
+            <span th:text="${turno.usuario?.email}">email@escuela.edu</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Zona:</span>
+            <span th:text="${turno.zona?.nombre}">Zona</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Fecha:</span>
+            <span th:text="${turno.fecha}">2026-01-01</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Franja horaria:</span>
+            <span th:text="${turno.franja}">RECREO_MANANA</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Estado:</span>
+            <span th:text="${turno.estado}">PENDIENTE</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Inicio:</span>
+            <span th:text="${turno.fechaHoraInicio}">-</span>
+        </div>
+        <div class="campo-detalle">
+            <span class="etiqueta">Fin:</span>
+            <span th:text="${turno.fechaHoraFin}">-</span>
+        </div>
+    </div>
+
+    <div class="acciones-detalle">
+        <a th:href="@{/turnos/{id}/editar(id=${turno.id})}" class="btn btn-primario">Editar</a>
+        <form th:action="@{/turnos/{id}/eliminar(id=${turno.id})}" method="post"
+              onsubmit="return confirm('¿Eliminar este turno?')">
+            <button type="submit" class="btn btn-peligro">Eliminar</button>
+        </form>
+    </div>
+</main>
+
+</body>
+</html>

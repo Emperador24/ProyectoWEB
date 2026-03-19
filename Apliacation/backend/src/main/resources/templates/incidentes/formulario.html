@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Nuevo Incidente</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div class="cabecera-pagina">
+        <h1>Nuevo Incidente</h1>
+        <a th:href="@{/incidentes}" class="btn btn-secundario">← Volver</a>
+    </div>
+
+    <form th:action="@{/incidentes}" th:object="${incidente}" method="post" class="formulario">
+
+        <!-- Tipo de incidente -->
+        <div class="grupo-campo">
+            <label for="tipo">Tipo de incidente *</label>
+            <select id="tipo" th:field="*{tipo}" class="campo">
+                <option value="">-- Seleccione --</option>
+                <option th:each="t : ${tipos}"
+                        th:value="${t}"
+                        th:text="${t}">TIPO</option>
+            </select>
+            <span class="error" th:errors="*{tipo}">Error</span>
+        </div>
+
+        <!-- Severidad -->
+        <div class="grupo-campo">
+            <label>Severidad *</label>
+            <div class="grupo-radio">
+                <label th:each="s : ${severidades}" class="radio-opcion">
+                    <input type="radio"
+                           th:field="*{severidad}"
+                           th:value="${s}">
+                    <span th:text="${s}">S1</span>
+                </label>
+            </div>
+            <span class="error" th:errors="*{severidad}">Error</span>
+        </div>
+
+        <!-- Zona -->
+        <div class="grupo-campo">
+            <label for="zona">Zona *</label>
+            <select id="zona" th:field="*{zona}" class="campo">
+                <option value="">-- Seleccione una zona --</option>
+                <option th:each="z : ${zonas}"
+                        th:value="${z.id}"
+                        th:text="${z.nombre}">Zona</option>
+            </select>
+            <span class="error" th:errors="*{zona}">Error</span>
+        </div>
+
+        <!-- Turno -->
+        <div class="grupo-campo">
+            <label for="turno">Turno relacionado (opcional)</label>
+            <select id="turno" th:field="*{turno}" class="campo">
+                <option value="">-- Sin turno --</option>
+                <option th:each="t : ${turnos}"
+                        th:value="${t.id}"
+                        th:text="'Turno #' + ${t.id} + ' — ' + ${t.usuario?.nombre} + ' · ' + ${t.zona?.nombre}">Turno</option>
+            </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="grupo-campo">
+            <label for="descripcion">Descripción *</label>
+            <textarea id="descripcion" th:field="*{descripcion}"
+                      class="campo" rows="4"
+                      placeholder="Describe el incidente..."></textarea>
+            <span class="error" th:errors="*{descripcion}">Error</span>
+        </div>
+
+        <!-- Curso del estudiante -->
+        <div class="grupo-campo">
+            <label for="cursoEstudiante">Curso del estudiante (opcional)</label>
+            <input type="text" id="cursoEstudiante" th:field="*{cursoEstudiante}"
+                   class="campo" placeholder="Ej: Grado 8A">
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit" class="btn btn-primario">Registrar incidente</button>
+            <a th:href="@{/incidentes}" class="btn btn-secundario">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>
