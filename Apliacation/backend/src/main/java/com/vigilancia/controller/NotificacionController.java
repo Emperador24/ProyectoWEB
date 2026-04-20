@@ -4,6 +4,7 @@ import com.vigilancia.model.Notificacion;
 import com.vigilancia.repository.NotificacionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -36,5 +37,14 @@ public class NotificacionController {
             n.setLeida(true);
             return ResponseEntity.ok(repo.save(n));
         }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/usuario/{uid}/leer-todas")
+    @Transactional
+    public ResponseEntity<Void> marcarTodasLeidas(@PathVariable Long uid) {
+        List<Notificacion> pendientes = repo.findByUsuarioIdAndLeidaFalse(uid);
+        for (Notificacion n : pendientes) n.setLeida(true);
+        repo.saveAll(pendientes);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario Turno</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div class="cabecera-pagina">
+        <!-- th:if / th:unless para mostrar texto distinto en crear vs editar -->
+        <h1 th:if="${turno.id == null}">Nuevo Turno</h1>
+        <h1 th:unless="${turno.id == null}">Editar Turno</h1>
+        <a th:href="@{/turnos}" class="btn btn-secundario">← Volver</a>
+    </div>
+
+    <!-- th:action cambia según si es nuevo o edición -->
+    <form th:action="${turno.id == null} ? @{/turnos} : @{/turnos/{id}/editar(id=${turno.id})}"
+          th:object="${turno}" method="post" class="formulario">
+
+        <!-- Docente -->
+        <div class="grupo-campo">
+            <label for="usuario">Docente *</label>
+            <!-- th:field vincula el campo con el objeto del modelo -->
+            <select id="usuario" th:field="*{usuario}" class="campo">
+                <option value="">-- Seleccione un docente --</option>
+                <!-- th:each para poblar el select con la lista de usuarios -->
+                <option th:each="u : ${usuarios}"
+                        th:value="${u.id}"
+                        th:text="${u.nombre}"
+                        th:selected="${turno.usuario?.id == u.id}">Docente</option>
+            </select>
+            <!-- th:errors muestra el error de validación del campo -->
+            <span class="error" th:errors="*{usuario}">Error</span>
+        </div>
+
+        <!-- Zona -->
+        <div class="grupo-campo">
+            <label for="zona">Zona *</label>
+            <select id="zona" th:field="*{zona}" class="campo">
+                <option value="">-- Seleccione una zona --</option>
+                <option th:each="z : ${zonas}"
+                        th:value="${z.id}"
+                        th:text="${z.nombre}"
+                        th:selected="${turno.zona?.id == z.id}">Zona</option>
+            </select>
+            <span class="error" th:errors="*{zona}">Error</span>
+        </div>
+
+        <!-- Fecha -->
+        <div class="grupo-campo">
+            <label for="fecha">Fecha *</label>
+            <input type="date" id="fecha" th:field="*{fecha}" class="campo">
+            <span class="error" th:errors="*{fecha}">Error</span>
+        </div>
+
+        <!-- Franja horaria -->
+        <div class="grupo-campo">
+            <label for="franja">Franja horaria</label>
+            <select id="franja" th:field="*{franja}" class="campo">
+                <option value="">-- Seleccione --</option>
+                <option th:each="f : ${franjas}"
+                        th:value="${f}"
+                        th:text="${f}">FRANJA</option>
+            </select>
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit" class="btn btn-primario">
+                <span th:if="${turno.id == null}">Crear turno</span>
+                <span th:unless="${turno.id == null}">Guardar cambios</span>
+            </button>
+            <a th:href="@{/turnos}" class="btn btn-secundario">Cancelar</a>
+        </div>
+    </form>
+</main>
+
+</body>
+</html>

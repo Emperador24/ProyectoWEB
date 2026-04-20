@@ -1,7 +1,9 @@
 package com.vigilancia.controller;
 
 import com.vigilancia.exception.ResourceNotFoundException;
+import com.vigilancia.model.Checkpoint;
 import com.vigilancia.model.Zona;
+import com.vigilancia.repository.CheckpointRepository;
 import com.vigilancia.repository.ZonaRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,14 @@ import java.util.List;
 public class ZonaController {
 
     private final ZonaRepository repo;
+    private final CheckpointRepository checkpointRepo;
+
+    @GetMapping("/{id}/puntos")
+    public List<Checkpoint> puntosDeZona(@PathVariable Long id) {
+        if (!repo.existsById(id))
+            throw new ResourceNotFoundException("Zona no encontrada con id: " + id);
+        return checkpointRepo.findByZonaId(id);
+    }
 
     @GetMapping
     public List<Zona> getAll() { return repo.findAll(); }

@@ -1,9 +1,11 @@
 package com.vigilancia.controller;
 
+import com.vigilancia.dto.CoberturaTurnoDto;
 import com.vigilancia.exception.ResourceNotFoundException;
 import com.vigilancia.model.Enums;
 import com.vigilancia.model.Turno;
 import com.vigilancia.repository.TurnoRepository;
+import com.vigilancia.service.CoberturaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/turnos")
@@ -18,6 +21,12 @@ import java.util.List;
 public class TurnoController {
 
     private final TurnoRepository repo;
+    private final CoberturaService coberturaService;
+
+    @GetMapping("/dashboard")
+    public List<CoberturaTurnoDto> dashboard() {
+        return coberturaService.dashboardHoy();
+    }
 
     @GetMapping
     public List<Turno> getAll() { return repo.findAll(); }
@@ -70,10 +79,18 @@ public class TurnoController {
 
     @PatchMapping("/{id}/estado")
     public Turno cambiarEstado(@PathVariable Long id,
-                               @RequestParam Enums.EstadoTurno estado) {
+                               @RequestParam(required = false) Enums.EstadoTurno estado,
+                               @RequestBody(required = false) Map<String, String> body) {
         Turno t = repo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Turno no encontrado con id: " + id));
-        t.setEstado(estado);
+        Enums.EstadoTurno nuevo = estado;
+        if (nuevo == null && body != null && body.get("estado") != null) {
+            nuevo = Enums.EstadoTurno.valueOf(body.get("estado"));
+        }
+        if (nuevo == null) {
+            throw new IllegalArgumentException("Debe enviar el campo 'estado' en el body o como query param");
+        }
+        t.setEstado(nuevo);
         return repo.save(t);
     }
 

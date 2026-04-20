@@ -1,0 +1,268 @@
+/* ===========================
+   Vigilancia Escolar — CSS
+   Tema: semana 2 del curso
+   =========================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    color: #1a1a1a;
+    background: #f4f5f7;
+    line-height: 1.6;
+}
+
+/* --- Navegación --- */
+nav {
+    background: #1e3a5f;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+}
+
+.nav-brand {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+    font-size: .9rem;
+    transition: color .15s;
+}
+
+.nav-links a:hover { color: #fff; }
+
+/* --- Contenido principal --- */
+main {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+/* --- Cabecera de página --- */
+.cabecera-pagina {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+}
+
+.cabecera-pagina h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e3a5f;
+}
+
+/* --- Alertas flash --- */
+.alerta {
+    padding: .75rem 1.25rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: .9rem;
+}
+
+.alerta-ok {
+    background: #d1fae5;
+    color: #065f46;
+    border-left: 4px solid #10b981;
+}
+
+.sin-datos {
+    text-align: center;
+    padding: 3rem;
+    color: #6b7280;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px dashed #d1d5db;
+}
+
+/* --- Tabla --- */
+.tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+
+.tabla thead {
+    background: #1e3a5f;
+    color: #fff;
+}
+
+.tabla th {
+    padding: .75rem 1rem;
+    text-align: left;
+    font-size: .8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.tabla td {
+    padding: .7rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: .9rem;
+    vertical-align: middle;
+}
+
+.tabla tbody tr:last-child td { border-bottom: none; }
+.tabla tbody tr:hover { background: #f9fafb; }
+
+.acciones {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* --- Botones --- */
+.btn {
+    display: inline-block;
+    padding: .45rem 1rem;
+    border-radius: 6px;
+    font-size: .875rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: opacity .15s;
+    line-height: 1.4;
+}
+
+.btn:hover { opacity: .85; }
+
+.btn-primario  { background: #1e3a5f; color: #fff; }
+.btn-secundario{ background: #e5e7eb; color: #374151; }
+.btn-peligro   { background: #dc2626; color: #fff; }
+
+.btn-pequeno {
+    padding: .3rem .65rem;
+    font-size: .8rem;
+}
+
+/* --- Badge --- */
+.badge {
+    display: inline-block;
+    padding: .2rem .6rem;
+    border-radius: 12px;
+    font-size: .78rem;
+    font-weight: 500;
+}
+
+.badge-verde   { background: #d1fae5; color: #065f46; }
+.badge-amarillo{ background: #fef3c7; color: #92400e; }
+.badge-rojo    { background: #fee2e2; color: #991b1b; }
+.badge-gris    { background: #f3f4f6; color: #4b5563; }
+
+/* --- Tarjeta de detalle --- */
+.tarjeta {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.campo-detalle {
+    display: flex;
+    padding: .6rem 0;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 1rem;
+}
+
+.campo-detalle:last-child { border-bottom: none; }
+
+.etiqueta {
+    min-width: 160px;
+    font-weight: 500;
+    color: #6b7280;
+    font-size: .875rem;
+}
+
+.acciones-detalle {
+    display: flex;
+    gap: .75rem;
+}
+
+/* --- Formulario --- */
+.formulario {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    padding: 2rem;
+    max-width: 640px;
+}
+
+.grupo-campo {
+    margin-bottom: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+}
+
+.grupo-campo label {
+    font-size: .875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.campo {
+    padding: .5rem .75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: .9rem;
+    background: #fff;
+    transition: border-color .15s;
+    width: 100%;
+}
+
+.campo:focus {
+    outline: none;
+    border-color: #1e3a5f;
+    box-shadow: 0 0 0 2px rgba(30,58,95,.1);
+}
+
+textarea.campo { resize: vertical; }
+
+.grupo-radio {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.radio-opcion {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    cursor: pointer;
+    font-size: .9rem;
+}
+
+/* Mensajes de error de validación (th:errors) */
+.error {
+    color: #dc2626;
+    font-size: .8rem;
+    display: block;
+}
+
+.acciones-formulario {
+    display: flex;
+    gap: .75rem;
+    margin-top: 1.5rem;
+}

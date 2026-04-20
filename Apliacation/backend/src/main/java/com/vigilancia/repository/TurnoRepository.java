@@ -19,4 +19,7 @@ public interface TurnoRepository extends JpaRepository<Turno, Long> {
 
     @Query("SELECT t FROM Turno t WHERE t.usuario.id = :usuarioId AND t.fecha = :fecha")
     List<Turno> findByUsuarioAndFecha(Long usuarioId, LocalDate fecha);
+
+    List<Turno> findByFechaBetween(LocalDate desde, LocalDate hasta);
+    long countByUsuarioIdAndFechaBetween(Long usuarioId, LocalDate desde, LocalDate hasta);
 }
