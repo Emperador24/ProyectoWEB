@@ -18,6 +18,8 @@ public class Checkpoint {
     @Column(unique = true)
     private String codigoQR;
 
+    private String codigoPin;
+
     private String descripcion;
 
     @Column(nullable = false)
@@ -28,16 +30,19 @@ public class Checkpoint {
     public static Builder builder() { return new Builder(); }
     public static class Builder {
         private Long id; private Zona zona; private String nombre;
-        private String codigoQR; private String descripcion; private Boolean activo = true;
+        private String codigoQR; private String codigoPin;
+        private String descripcion; private Boolean activo = true;
         public Builder id(Long id) { this.id = id; return this; }
         public Builder zona(Zona zona) { this.zona = zona; return this; }
         public Builder nombre(String nombre) { this.nombre = nombre; return this; }
         public Builder codigoQR(String codigoQR) { this.codigoQR = codigoQR; return this; }
+        public Builder codigoPin(String codigoPin) { this.codigoPin = codigoPin; return this; }
         public Builder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
         public Builder activo(Boolean activo) { this.activo = activo; return this; }
         public Checkpoint build() {
             Checkpoint c = new Checkpoint(); c.id = id; c.zona = zona; c.nombre = nombre;
-            c.codigoQR = codigoQR; c.descripcion = descripcion; c.activo = activo; return c;
+            c.codigoQR = codigoQR; c.codigoPin = codigoPin;
+            c.descripcion = descripcion; c.activo = activo; return c;
         }
     }
 
@@ -49,6 +54,8 @@ public class Checkpoint {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCodigoQR() { return codigoQR; }
     public void setCodigoQR(String codigoQR) { this.codigoQR = codigoQR; }
+    public String getCodigoPin() { return codigoPin; }
+    public void setCodigoPin(String codigoPin) { this.codigoPin = codigoPin; }
     public String getDescripcion() { return descripcion; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
     public Boolean getActivo() { return activo; }

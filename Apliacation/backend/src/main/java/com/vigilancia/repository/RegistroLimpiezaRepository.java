@@ -8,4 +8,5 @@ import java.util.List;
 public interface RegistroLimpiezaRepository extends JpaRepository<RegistroLimpieza, Long> {
     List<RegistroLimpieza> findByTurnoId(Long turnoId);
     List<RegistroLimpieza> findByRegistradoPorId(Long usuarioId);
+    List<RegistroLimpieza> findByTurnoZonaId(Long zonaId);
 }

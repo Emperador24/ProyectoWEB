@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Incidentes</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div th:if="${mensaje}" class="alerta alerta-ok" th:text="${mensaje}"></div>
+
+    <div class="cabecera-pagina">
+        <h1 th:text="${titulo}">Incidentes</h1>
+        <a th:href="@{/incidentes/nuevo}" class="btn btn-primario">+ Nuevo incidente</a>
+    </div>
+
+    <p th:if="${#lists.isEmpty(incidentes)}" class="sin-datos">No hay incidentes registrados.</p>
+
+    <table th:unless="${#lists.isEmpty(incidentes)}" class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tipo</th>
+                <th>Severidad</th>
+                <th>Zona</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="inc : ${incidentes}">
+                <td th:text="${inc.id}">1</td>
+                <td th:text="${inc.tipo}">TIPO</td>
+                <td>
+                    <span class="badge"
+                          th:classappend="${inc.severidad?.name() == 'S3'} ? 'badge-rojo' :
+                                         (${inc.severidad?.name() == 'S2'} ? 'badge-amarillo' : 'badge-verde')"
+                          th:text="${inc.severidad}">S1</span>
+                </td>
+                <td th:text="${inc.zona?.nombre}">Zona</td>
+                <!-- th:text con #strings para truncar texto largo -->
+                <td th:text="${#strings.abbreviate(inc.descripcion, 50)}">Descripción...</td>
+                <td th:text="${inc.estado}">PENDIENTE</td>
+                <td th:text="${#temporals.format(inc.fechaHora, 'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+                <td class="acciones">
+                    <a th:href="@{/incidentes/{id}(id=${inc.id})}" class="btn btn-pequeno">Ver</a>
+                    <form th:action="@{/incidentes/{id}/eliminar(id=${inc.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este incidente?')">
+                        <button type="submit" class="btn btn-pequeno btn-peligro">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>

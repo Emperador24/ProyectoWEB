@@ -1,0 +1,11 @@
+.claude
+node_modules/                               
+  build/                                      
+  .env                                          
+  .env.local
+  *.log                                         
+  .DS_Store
+  target/                                       
+  .idea/                                      
+  .vscode/
+  

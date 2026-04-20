@@ -22,6 +22,16 @@ public class RegistroLimpiezaController {
         return repo.findByTurnoId(turnoId);
     }
 
+    @GetMapping("/zona/{zonaId}")
+    public List<RegistroLimpieza> getByZona(@PathVariable Long zonaId) {
+        return repo.findByTurnoZonaId(zonaId);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RegistroLimpieza> getById(@PathVariable Long id) {
+        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public RegistroLimpieza create(@RequestBody RegistroLimpieza r) { return repo.save(r); }
 

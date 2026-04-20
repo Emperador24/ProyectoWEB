@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Turnos</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+<nav>
+    <div class="nav-brand">🏫 Vigilancia Escolar</div>
+    <ul class="nav-links">
+        <li><a th:href="@{/turnos}">Turnos</a></li>
+        <li><a th:href="@{/incidentes}">Incidentes</a></li>
+    </ul>
+</nav>
+
+<main>
+    <div th:if="${mensaje}" class="alerta alerta-ok" th:text="${mensaje}"></div>
+
+    <div class="cabecera-pagina">
+        <h1 th:text="${titulo}">Lista de Turnos</h1>
+        <a th:href="@{/turnos/nuevo}" class="btn btn-primario">+ Nuevo turno</a>
+    </div>
+
+    <!-- th:if para mostrar mensaje cuando no hay datos -->
+    <p th:if="${#lists.isEmpty(turnos)}" class="sin-datos">No hay turnos registrados.</p>
+
+    <!-- th:each para iterar la lista de turnos -->
+    <table th:unless="${#lists.isEmpty(turnos)}" class="tabla">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Docente</th>
+                <th>Zona</th>
+                <th>Fecha</th>
+                <th>Franja</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- th:each: itera sobre la lista "turnos" pasada desde el controller -->
+            <tr th:each="turno : ${turnos}">
+                <!-- th:text: muestra el valor del campo -->
+                <td th:text="${turno.id}">1</td>
+                <td th:text="${turno.usuario?.nombre}">Docente</td>
+                <td th:text="${turno.zona?.nombre}">Zona</td>
+                <td th:text="${turno.fecha}">2026-01-01</td>
+                <td th:text="${turno.franja}">RECREO</td>
+                <td>
+                    <!-- th:classappend para agregar clase CSS según el estado -->
+                    <span class="badge"
+                          th:classappend="${turno.estado?.name() == 'EN_CURSO'} ? 'badge-verde' :
+                                         (${turno.estado?.name() == 'COMPLETADO'} ? 'badge-gris' : 'badge-amarillo')"
+                          th:text="${turno.estado}">PENDIENTE</span>
+                </td>
+                <td class="acciones">
+                    <!-- th:href con variable de ruta (paso de parámetros) -->
+                    <a th:href="@{/turnos/{id}(id=${turno.id})}" class="btn btn-pequeno">Ver</a>
+                    <a th:href="@{/turnos/{id}/editar(id=${turno.id})}" class="btn btn-pequeno btn-secundario">Editar</a>
+                    <!-- Formulario POST para eliminar (HTML solo soporta GET y POST) -->
+                    <form th:action="@{/turnos/{id}/eliminar(id=${turno.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este turno?')">
+                        <button type="submit" class="btn btn-pequeno btn-peligro">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</main>
+
+</body>
+</html>
