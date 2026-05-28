@@ -102,9 +102,21 @@ export default function App() {
             <Route path="notificaciones"  element={<Notificaciones />} />
             <Route path="turnos/:id"      element={<TurnoDetalle />} />
             <Route path="incidentes/nuevo" element={<IncidenteNuevo />} />
-            <Route path="zonas"           element={<Zonas />} />
-            <Route path="zonas/:id"       element={<ZonaDetalle />} />
-            <Route path="usuarios"        element={<Usuarios />} />
+
+            {rol === 'COORDINADOR' && (
+              <>
+                <Route path="zonas"       element={<Zonas />} />
+                <Route path="zonas/:id"   element={<ZonaDetalle />} />
+              </>
+            )}
+
+            {rol === 'DIRECTOR' && (
+              <>
+                <Route path="zonas"       element={<Zonas />} />
+                <Route path="zonas/:id"   element={<ZonaDetalle />} />
+                <Route path="usuarios"    element={<Usuarios />} />
+              </>
+            )}
 
             {rol === 'COORDINADOR' && (
               <>

@@ -12,7 +12,6 @@ const NAV_COORDINADOR = [
   { to: '/metricas', label: 'Métricas', icon: '🏆' },
   { to: '/notificaciones', label: 'Notificaciones', icon: '🔔' },
   { to: '/zonas', label: 'Zonas', icon: '🏫' },
-  { to: '/usuarios', label: 'Usuarios', icon: '👥' },
   { to: '/configuracion', label: 'Configuración', icon: '⚙' },
 ]
 
@@ -30,6 +29,7 @@ const NAV_DIRECTOR = [
   { to: '/turnos', label: 'Turnos', icon: '📅' },
   { to: '/zonas', label: 'Zonas', icon: '🏫' },
   { to: '/usuarios', label: 'Usuarios', icon: '👥' },
+  { to: '/notificaciones', label: 'Notificaciones', icon: '🔔' },
   { to: '/analitica', label: 'Analítica', icon: '📊' },
   { to: '/metricas', label: 'Métricas', icon: '🏆' },
   { to: '/configuracion', label: 'Configuración', icon: '⚙' },
