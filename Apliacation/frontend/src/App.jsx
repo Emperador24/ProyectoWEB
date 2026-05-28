@@ -1,7 +1,7 @@
-import React, { createContext, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import AppLayout from './components/AppLayout'
-import { usuariosApi } from './services/api'
+import Login from './pages/Login'
 
 import CoordDashboard from './pages/coordinador/Dashboard'
 import CoordTurnos from './pages/coordinador/Turnos'
@@ -27,8 +27,6 @@ import Usuarios from './pages/Usuarios'
 
 export const SessionContext = createContext(null)
 
-// Normaliza el rol que viene del backend (DOCENTE/COORDINADOR/ADMIN)
-// al rol que usa el frontend existente (PROFESOR/COORDINADOR/DIRECTOR).
 function rolFrontend(backendRol) {
   if (backendRol === 'DOCENTE') return 'PROFESOR'
   if (backendRol === 'ADMIN' || backendRol === 'ADMINISTRADOR') return 'DIRECTOR'
@@ -36,51 +34,58 @@ function rolFrontend(backendRol) {
 }
 
 export default function App() {
-  const [usuarios, setUsuarios] = useState([])
-  const [activeUser, setActiveUser] = useState(null)
-  const [cargando, setCargando] = useState(true)
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user')
+    return stored ? JSON.parse(stored) : null
+  })
+  const [cargando, setCargando] = useState(false)
 
-  useEffect(() => {
-    usuariosApi.getAll()
-      .then(r => {
-        const list = r.data || []
-        setUsuarios(list)
-        if (list.length > 0) setActiveUser(list[0])
-      })
-      .catch(() => setUsuarios([]))
-      .finally(() => setCargando(false))
+  const login = useCallback((token, userData) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(userData))
+    setUser(userData)
+  }, [])
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
   }, [])
 
   const value = useMemo(() => {
-    const session = activeUser ? {
-      ...activeUser,
-      // Alias para que las páginas existentes sigan leyendo session.rol/nombre
-      rol: rolFrontend(activeUser.rol),
-      rolBackend: activeUser.rol,
-      nombre: `${activeUser.nombre || ''} ${activeUser.apellido || ''}`.trim() || activeUser.nombre,
-    } : null
+    if (!user) return { session: null, login, logout, user: null, activeUser: null }
+    const session = {
+      ...user,
+      id: user.id,
+      rol: rolFrontend(user.rol),
+      rolBackend: user.rol,
+      nombre: user.nombre,
+    }
     return {
       session,
-      activeUser,
-      setActiveUser,
-      usuarios,
-      activeRole: session?.rol || null,
+      activeUser: user,
+      activeRole: session.rol,
+      login,
+      logout,
+      user,
     }
-  }, [activeUser, usuarios])
+  }, [user, login, logout])
+
+  const isAuth = !!user
 
   if (cargando) {
-    return <div style={{ padding: 60, textAlign: 'center', color: '#9ca3af', fontSize: 16 }}>Cargando usuarios...</div>
+    return <div style={{ padding: 60, textAlign: 'center', color: '#9ca3af', fontSize: 16 }}>Cargando...</div>
   }
 
-  if (!activeUser) {
+  if (!isAuth) {
     return (
-      <div style={{ padding: 60, textAlign: 'center', color: '#dc2626' }}>
-        <div style={{ fontSize: 40, marginBottom: 12 }}>⚠️</div>
-        <div style={{ fontWeight: 700, fontSize: 16 }}>No hay usuarios disponibles en el backend</div>
-        <div style={{ fontSize: 14, marginTop: 8, color: '#6b7280' }}>
-          Verifica que el backend esté corriendo en http://localhost:8080 y que existan usuarios en /api/usuarios
-        </div>
-      </div>
+      <SessionContext.Provider value={value}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="*" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </SessionContext.Provider>
     )
   }
 
@@ -93,7 +98,6 @@ export default function App() {
           <Route path="/*" element={<AppLayout />}>
             <Route index element={<Navigate to="/dashboard" />} />
 
-            {/* Rutas compartidas */}
             <Route path="configuracion"   element={<Configuracion />} />
             <Route path="notificaciones"  element={<Notificaciones />} />
             <Route path="turnos/:id"      element={<TurnoDetalle />} />

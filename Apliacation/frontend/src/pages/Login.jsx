@@ -1,46 +1,89 @@
 import { useState, useContext } from 'react'
 import { SessionContext } from '../App'
 import { useNavigate } from 'react-router-dom'
+import { authApi } from '../services/api'
 
-const CREDS = {
-  COORDINADOR: { email: 'ana.garcia@escuela.edu', password: 'coord123', nombre: 'Ana García', color: '#22c55e' },
-  PROFESOR:    { email: 'carlos.rodriguez@escuela.edu', password: 'doc123', nombre: 'Carlos Rodríguez', color: '#3b82f6' },
-  DIRECTOR:    { email: 'roberto.martinez@escuela.edu', password: 'dir123', nombre: 'Roberto Martínez', color: '#8b5cf6' },
-}
+const ROLES = [
+  { key: 'DOCENTE', label: 'Docente', icon: '🎓', iconClass: 'blue', placeholder: 'tu.correo@colegio.edu' },
+  { key: 'COORDINADOR', label: 'Coordinador', icon: '🏫', iconClass: 'green', placeholder: 'coordinador@colegio.edu' },
+  { key: 'ADMIN', label: 'Administrador', icon: '👤', iconClass: 'purple', placeholder: 'admin@colegio.edu' },
+]
 
-const ROL_CONFIG = {
-  COORDINADOR: { icon: '🏫', iconClass: 'green', placeholder: 'ana.garcia@escuela.edu' },
-  PROFESOR:    { icon: '🎓', iconClass: 'blue',  placeholder: 'carlos.rodriguez@escuela.edu' },
-  DIRECTOR:    { icon: '👤', iconClass: 'purple', placeholder: 'roberto.martinez@escuela.edu' },
-}
-
-const ROL_LABEL = { COORDINADOR: 'Coordinador', PROFESOR: 'Profesor', DIRECTOR: 'Director' }
-
-export default function Login({ rol, onBack }) {
+export default function Login() {
   const { login } = useContext(SessionContext)
   const navigate = useNavigate()
+  const [step, setStep] = useState('rol')
+  const [selectedRol, setSelectedRol] = useState(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const cfg = ROL_CONFIG[rol]
-  const cred = CREDS[rol]
+  const handleSelectRol = rol => {
+    setSelectedRol(rol)
+    setStep('login')
+    setError('')
+    const defaults = {
+      DOCENTE: { email: 'carlos.rodriguez@colegio.edu', password: 'doc123' },
+      COORDINADOR: { email: 'ana.garcia@colegio.edu', password: 'coord123' },
+      ADMIN: { email: 'admin@colegio.edu', password: 'admin123' },
+    }
+    setEmail(defaults[rol.key]?.email || '')
+    setPassword(defaults[rol.key]?.password || '')
+  }
 
-  const handleLogin = () => {
-    if (email === cred.email && password === cred.password) {
-      login({ rol, nombre: cred.nombre, color: cred.color })
+  const handleLogin = async () => {
+    setError('')
+    setLoading(true)
+    try {
+      const res = await authApi.login(email, password)
+      const { token, usuario } = res.data
+      login(token, usuario)
       navigate('/dashboard')
-    } else {
-      setError('Credenciales incorrectas. Intenta de nuevo.')
+    } catch (err) {
+      const msg = err.response?.data?.error || 'Error al iniciar sesión. Verifica tus credenciales.'
+      setError(msg)
+    } finally {
+      setLoading(false)
     }
   }
+
+  if (step === 'rol') {
+    return (
+      <div className="login-page">
+        <div className="login-top">
+          <div className="login-top-icon">🏫</div>
+          <h1>Sistema de Vigilancia Docente</h1>
+          <p>Colegio San José - Gestión de Supervisión Escolar</p>
+        </div>
+        <div className="role-selector">
+          <h2>Selecciona tu rol</h2>
+          <p className="login-sub">Elige el perfil con el que deseas ingresar</p>
+          <div className="role-cards">
+            {ROLES.map(rol => (
+              <div
+                key={rol.key}
+                className={`role-card ${rol.iconClass}`}
+                onClick={() => handleSelectRol(rol)}
+              >
+                <div className="role-icon">{rol.icon}</div>
+                <div className="role-name">{rol.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const cfg = ROLES.find(r => r.key === selectedRol.key)
 
   return (
     <div className="login-page">
       <div className="login-top">
         <div className="login-top-icon">🏫</div>
         <h1>Sistema de Vigilancia Docente</h1>
-        <p>🏫 Colegio San José - Gestión de Supervisión Escolar</p>
+        <p>Colegio San José - Gestión de Supervisión Escolar</p>
       </div>
 
       <div className="login-card">
@@ -48,7 +91,7 @@ export default function Login({ rol, onBack }) {
           {cfg.icon}
         </div>
 
-        <h2>Iniciar como {ROL_LABEL[rol]}</h2>
+        <h2>Iniciar como {cfg.label}</h2>
         <p className="login-sub">Ingresa tus credenciales para continuar</p>
 
         {error && (
@@ -82,17 +125,15 @@ export default function Login({ rol, onBack }) {
             placeholder="••••••••••"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleLogin()}
+            onKeyDown={e => e.key === 'Enter' && !loading && handleLogin()}
           />
         </div>
 
-        <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '10px 14px', fontSize: 12, color: '#166534', marginTop: 12 }}>
-          💡 <strong>Credenciales de demo:</strong> {cred.email} / {cred.password}
-        </div>
-
         <div className="login-btns">
-          <button className="back-btn" onClick={onBack}>Cambiar rol</button>
-          <button className="login-btn" onClick={handleLogin}>Ingresar</button>
+          <button className="back-btn" onClick={() => setStep('rol')}>Cambiar rol</button>
+          <button className="login-btn" onClick={handleLogin} disabled={loading}>
+            {loading ? 'Ingresando...' : 'Ingresar'}
+          </button>
         </div>
       </div>
     </div>

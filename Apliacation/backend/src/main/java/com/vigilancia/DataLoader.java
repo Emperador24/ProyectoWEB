@@ -5,6 +5,7 @@ import com.vigilancia.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,23 +27,27 @@ public class DataLoader implements CommandLineRunner {
     private final NotificacionRepository notifRepo;
     private final MapaCalorRepository mapaCalorRepo;
     private final MetricaDocenteRepository metricaRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public DataLoader(UsuarioRepository usuarioRepo, ZonaRepository zonaRepo,
                       TurnoRepository turnoRepo, CheckpointRepository checkpointRepo,
                       IncidenteRepository incidenteRepo, CheckInRepository checkInRepo,
                       ReasignacionRepository reasignacionRepo, RegistroLimpiezaRepository limpiezaRepo,
                       NotificacionRepository notifRepo, MapaCalorRepository mapaCalorRepo,
-                      MetricaDocenteRepository metricaRepo) {
+                      MetricaDocenteRepository metricaRepo,
+                      PasswordEncoder passwordEncoder) {
         this.usuarioRepo = usuarioRepo; this.zonaRepo = zonaRepo; this.turnoRepo = turnoRepo;
         this.checkpointRepo = checkpointRepo; this.incidenteRepo = incidenteRepo;
         this.checkInRepo = checkInRepo; this.reasignacionRepo = reasignacionRepo;
         this.limpiezaRepo = limpiezaRepo; this.notifRepo = notifRepo;
         this.mapaCalorRepo = mapaCalorRepo; this.metricaRepo = metricaRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public void run(String... args) {
-        // GUARDA: si ya hay usuarios no insertar nada (evita duplicados en reinicios)
+        migrarPasswords();
+
         if (usuarioRepo.count() > 0) {
             log.info("=== BD ya tiene datos — omitiendo carga inicial ===");
             return;
@@ -50,24 +55,29 @@ public class DataLoader implements CommandLineRunner {
 
         log.info("=== Iniciando carga batch de datos ===");
 
+        String passAdmin = passwordEncoder.encode("admin123");
+        String passCoord = passwordEncoder.encode("coord123");
+        String passDoc   = passwordEncoder.encode("doc123");
+        String passDir   = passwordEncoder.encode("dir123");
+
         Usuario admin = usuarioRepo.save(Usuario.builder()
                 .nombre("Carlos Administrador").email("admin@colegio.edu")
-                .password("admin123").rol(Enums.RolUsuario.ADMIN).activo(true).build());
+                .password(passAdmin).rol(Enums.RolUsuario.ADMIN).activo(true).build());
         Usuario coord1 = usuarioRepo.save(Usuario.builder()
                 .nombre("Ana García").email("ana.garcia@escuela.edu")
-                .password("coord123").rol(Enums.RolUsuario.COORDINADOR).activo(true).build());
+                .password(passCoord).rol(Enums.RolUsuario.COORDINADOR).activo(true).build());
         Usuario doc1 = usuarioRepo.save(Usuario.builder()
                 .nombre("Carlos Rodríguez").email("carlos.rodriguez@escuela.edu")
-                .password("doc123").rol(Enums.RolUsuario.DOCENTE).activo(true).build());
+                .password(passDoc).rol(Enums.RolUsuario.DOCENTE).activo(true).build());
         Usuario doc2 = usuarioRepo.save(Usuario.builder()
                 .nombre("María González").email("mgonzalez@colegio.edu")
-                .password("doc123").rol(Enums.RolUsuario.DOCENTE).activo(true).build());
+                .password(passDoc).rol(Enums.RolUsuario.DOCENTE).activo(true).build());
         Usuario doc3 = usuarioRepo.save(Usuario.builder()
                 .nombre("Felipe Torres").email("ftorres@colegio.edu")
-                .password("doc123").rol(Enums.RolUsuario.DOCENTE).activo(true).build());
+                .password(passDoc).rol(Enums.RolUsuario.DOCENTE).activo(true).build());
         Usuario director = usuarioRepo.save(Usuario.builder()
                 .nombre("Roberto Martínez").email("roberto.martinez@escuela.edu")
-                .password("dir123").rol(Enums.RolUsuario.ADMIN).activo(true).build());
+                .password(passDir).rol(Enums.RolUsuario.ADMIN).activo(true).build());
         log.info("Usuarios cargados: {}", usuarioRepo.count());
 
         Zona zonaPatio = zonaRepo.save(Zona.builder()
@@ -209,5 +219,22 @@ public class DataLoader implements CommandLineRunner {
         log.info("Métricas docentes cargadas: {}", metricaRepo.count());
 
         log.info("=== Carga batch completada exitosamente ===");
+    }
+
+    private void migrarPasswords() {
+        List<Usuario> usuarios = usuarioRepo.findAll();
+        boolean algunCambio = false;
+        for (Usuario u : usuarios) {
+            String pwd = u.getPassword();
+            if (pwd != null && !pwd.startsWith("$2a$") && !pwd.startsWith("$2b$") && !pwd.startsWith("$2y$")) {
+                u.setPassword(passwordEncoder.encode(pwd));
+                usuarioRepo.save(u);
+                algunCambio = true;
+                log.info("Password migrada para: {}", u.getEmail());
+            }
+        }
+        if (algunCambio) {
+            log.info("=== Passwords migradas a BCrypt ===");
+        }
     }
 }

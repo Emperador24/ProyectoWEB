@@ -9,9 +9,9 @@
 
 | Entrega | Estado |
 |---------|--------|
-| Primera entrega | 👨🏻‍💻 Trabajando |
-| Segunda entrega | 🔲 Pendiente |
-| Tercera entrega | 🔲 Pendiente |
+| Primera entrega | ✅ Completada |
+| Segunda entrega | ✅ Completada |
+| Tercera entrega | ✅ Completada |
 
 ---
 
@@ -44,54 +44,80 @@
 
 ---
 
-## 🔲 Segunda entrega (20%) — Pendiente
+## ✅ Segunda entrega (20%) — Completada
 
 ### Entregables
 
 | # | Entregable | Estado |
 |---|-----------|--------|
-| 1 | Diseño detallado de servicios REST y Arquitectura SPA | 🔲 |
-| 2 | Implementación de funcionalidades principales | 🔲 |
-| 3 | Video explicativo del código y funcionalidades | 🔲 |
+| 1 | Diseño detallado de servicios REST y Arquitectura SPA | ✅ |
+| 2 | Implementación de funcionalidades principales | ✅ |
+| 3 | Video explicativo del código y funcionalidades | 👨🏻‍💻 Pendiente |
 
-> ⚠️ **Sin autenticación** — tampoco se implementa en esta entrega.
+### Qué se implementó
 
-### Qué se espera implementar
-
-- Migrar de MPA a **SPA completa** con React Router
-- Diseño y documentación formal de la **API REST** (OpenAPI / Swagger)
-- Implementar las **funcionalidades principales** del sistema:
-  - Tablero en vivo para coordinación (estados verde/amarillo/rojo)
-  - Vigilancia activa con recordatorios de recorrido
-  - Alertas automáticas por ausencia de cobertura (umbral 2 min)
-  - Verificación de presencia con QR/PIN
-  - Reasignación automática con ventana de aceptación (30–60 s)
-- Mejorar la experiencia de usuario (UX) y diseño visual
+- **SPA completa** con React Router (basada en la MPA de la E1)
+- **API REST documentada** con OpenAPI / Swagger (`/swagger-ui.html`)
+- **Tablero en vivo** para coordinación con estados:
+  - 🟢 **Verde**: cubierta (check-in realizado)
+  - 🟡 **Amarillo**: por iniciar (ventana de espera)
+  - 🔴 **Rojo**: sin cobertura (umbral superado)
+- **Vigilancia activa** con recordatorios de recorrido cada X minutos
+- **Alertas automáticas** por ausencia de cobertura (umbral 2 min)
+- **Verificación de presencia** mediante QR y PIN rotativo
+- **Reasignación automática** con sugerencia de docentes disponibles
+- **UX mejorada** con sidebar temática por rol, notificaciones en vivo y diseño visual refinado
 
 ---
 
-## 🔲 Tercera entrega (30%) — Pendiente
+## ✅ Tercera entrega (30%) — Completada
 
 ### Entregables
 
 | # | Entregable | Estado |
 |---|-----------|--------|
-| 1 | SPA + servicios REST con autenticación y autorización | 🔲 |
-| 2 | Pruebas de integración automatizadas (una por método HTTP complejo) | 🔲 |
-| 3 | Prueba de sistema automatizada (caso de uso más complejo) | 🔲 |
-| 4 | Video explicativo del código y funcionalidades | 🔲 |
+| 1 | SPA + servicios REST con autenticación y autorización | ✅ |
+| 2 | Pruebas de integración automatizadas (una por método HTTP complejo) | ✅ |
+| 3 | Prueba de sistema automatizada (caso de uso más complejo) | ✅ |
+| 4 | Video explicativo del código y funcionalidades | 👨🏻‍💻 Pendiente |
 
-### Qué se espera implementar
+### Qué se implementó
 
-- **Autenticación y autorización** con control de acceso por roles:
-  - `DOCENTE` — accede a sus turnos, registra check-ins e incidentes
-  - `COORDINADOR` — tablero en vivo, gestión de reasignaciones, reportes
-  - `ADMIN` — configuración completa del sistema
-- **Pruebas de integración** con Spring Boot Test (GET, POST, PUT, DELETE, PATCH)
-- **Prueba de sistema** del flujo completo: turno → check-in → incidente → reasignación
-- **Modo offline** con sincronización posterior
-- **Analítica y exportación** CSV/Excel de reportes semanales
-- Gamificación con reconocimientos trimestrales
+#### Autenticación y autorización (Spring Security + JWT)
+
+- **Login con JWT**: endpoint `POST /api/auth/login` que retorna token Bearer
+- **Spring Security** con `SecurityFilterChain` y `OncePerRequestFilter` para JWT
+- **Control de acceso por roles** en endpoints:
+  - `DOCENTE` — turnos, check-ins, incidentes propios
+  - `COORDINADOR` — dashboard, reasignaciones, reportes, análisis
+  - `ADMIN` — gestión completa de usuarios, zonas y configuración
+- **Contraseñas hasheadas** con BCrypt en la base de datos
+- **Frontend**: login real contra el backend, almacenamiento de JWT en localStorage, interceptor de axios con token Bearer, redirección automática al login en 401
+
+#### Pruebas de integración (6 pruebas)
+
+| # | Método | Endpoint | Descripción |
+|---|--------|----------|-------------|
+| 1 | POST | `/api/auth/login` | Inicio de sesión retorna token |
+| 2 | GET | `/api/incidentes` | Listar incidentes |
+| 3 | POST | `/api/incidentes` | Crear incidente |
+| 4 | PUT | `/api/incidentes/{id}` | Actualizar incidente |
+| 5 | PATCH | `/api/incidentes/{id}/resolver` | Resolver incidente |
+| 6 | DELETE | `/api/incidentes/{id}` | Eliminar incidente |
+
+#### Prueba de sistema (9 pasos)
+
+Flujo completo: `Login docente → Obtener turnos → Check-in QR → Reportar incidente → Login coordinador → Ver dashboard → Crear reasignación → Aceptar reasignación → Verificar trazabilidad`
+
+#### Credenciales de prueba
+
+| Rol | Email | Contraseña |
+|-----|-------|-----------|
+| ADMIN | `admin@colegio.edu` | `admin123` |
+| COORDINADOR | `ana.garcia@colegio.edu` | `coord123` |
+| DOCENTE | `carlos.rodriguez@colegio.edu` | `doc123` |
+| DOCENTE | `maria.gonzalez@colegio.edu` | `doc123` |
+| DOCENTE | `felipe.torres@colegio.edu` | `doc123` |
 
 ---
 
@@ -167,22 +193,38 @@ vigilancia-docente/
 ├── backend/                          ← Spring Boot (Java 17)
 │   ├── pom.xml
 │   └── src/main/java/com/vigilancia/
-│       ├── VigilanciaDocenteApplication.java
+│       ├── VigilanciaApplication.java
 │       ├── CorsConfig.java
-│       ├── DataLoader.java           ← Programa Batch
+│       ├── OpenApiConfig.java
+│       ├── DataLoader.java           ← Programa Batch (carga inicial BD)
+│       ├── security/                 ← Autenticación JWT + Spring Security
+│       │   ├── SecurityConfig.java
+│       │   ├── CustomUserDetailsService.java
+│       │   └── jwt/
+│       │       ├── JwtUtil.java
+│       │       └── JwtAuthFilter.java
 │       ├── model/                    ← 11 entidades JPA
 │       ├── repository/               ← JPA Repositories
-│       └── controller/               ← REST Controllers
+│       ├── service/                  ← Lógica de negocio (CoberturaService)
+│       ├── dto/                      ← Objetos de transferencia
+│       ├── controller/               ← REST Controllers (11 + alias)
+│       ├── batch/                    ← Spring Batch (seeder masivo)
+│       └── exception/                ← Manejo global de errores
 ├── frontend/                         ← React + Vite
 │   └── src/
-│       ├── App.jsx                   ← Routing (MPA → SPA en E2)
+│       ├── App.jsx                   ← Auth context + React Router
 │       ├── components/
-│       │   ├── Layout.jsx
-│       │   └── shared.jsx
-│       ├── pages/                    ← Una página por módulo
-│       └── services/
-│           └── api.js                ← Axios
-├── diagrama-er.mermaid               ← Diagrama ER en Mermaid
+│       │   ├── AppLayout.jsx         ← Sidebar + topbar + logout
+│       │   └── ReassignDialog.jsx
+│       ├── pages/
+│       │   ├── Login.jsx             ← Login real con JWT
+│       │   ├── coordinador/          ← Dashboard, Turnos, Incidentes, etc.
+│       │   ├── profesor/             ← Dashboard, Turnos, Checkin, etc.
+│       │   └── director/             ← Dashboard, Analítica, Métricas
+│       ├── services/
+│       │   └── api.js                ← Axios con interceptor JWT
+│       └── utils/                    ← labels.js, tiempo.js
+├── docker-compose.yml                ← PostgreSQL + Backend
 └── README.md
 ```
 

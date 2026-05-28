@@ -1,20 +1,36 @@
 import axios from 'axios'
 
-// El proxy de Vite redirige /api → http://localhost:8080
-// Así que todas las rutas van como /api/...
 const api = axios.create({
   baseURL: '/api',
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Interceptor: loguea errores para facilitar debugging
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 api.interceptors.response.use(
   res => res,
   err => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      if (window.location.pathname !== '/login') {
+        window.location.href = '/login'
+      }
+    }
     console.error('[API Error]', err.config?.url, err.response?.status, err.response?.data)
     return Promise.reject(err)
   }
 )
+
+export const authApi = {
+  login: (email, password) => api.post('/auth/login', { email, password }),
+}
 
 export const usuariosApi = {
   getAll: () => api.get('/usuarios'),
@@ -42,7 +58,6 @@ export const turnosApi = {
   getByEstado: (estado) => api.get(`/turnos/estado/${estado}`),
   create: (data) => api.post('/turnos', data),
   update: (id, data) => api.put(`/turnos/${id}`, data),
-  // PATCH /api/turnos/{id}/estado?estado=EN_CURSO
   cambiarEstado: (id, estado) => api.patch(`/turnos/${id}/estado?estado=${estado}`),
   delete: (id) => api.delete(`/turnos/${id}`),
 }
@@ -71,7 +86,6 @@ export const reasignacionesApi = {
   getById: (id) => api.get(`/reasignaciones/${id}`),
   getByTurno: (tid) => api.get(`/reasignaciones/turno/${tid}`),
   create: (data) => api.post('/reasignaciones', data),
-  // PATCH /api/reasignaciones/{id}/responder?estado=ACEPTADA
   responder: (id, estado) => api.patch(`/reasignaciones/${id}/responder?estado=${estado}`),
   delete: (id) => api.delete(`/reasignaciones/${id}`),
 }
@@ -116,3 +130,5 @@ export const checkpointsApi = {
   update: (id, data) => api.put(`/checkpoints/${id}`, data),
   delete: (id) => api.delete(`/checkpoints/${id}`),
 }
+
+export default api
