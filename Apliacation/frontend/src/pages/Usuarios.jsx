@@ -39,6 +39,9 @@ export default function Usuarios() {
     if (!form.nombre.trim() || !form.email.trim()) {
       setError('Nombre y email son obligatorios'); return
     }
+    if (!editing && !form.password.trim()) {
+      setError('La contraseña es obligatoria'); return
+    }
     try {
       const payload = { ...form }
       if (!payload.password) delete payload.password

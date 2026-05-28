@@ -5,18 +5,23 @@ import com.vigilancia.model.Enums;
 import com.vigilancia.model.Usuario;
 import com.vigilancia.repository.UsuarioRepository;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@RequiredArgsConstructor
 public class UsuarioController {
 
     private final UsuarioRepository repo;
+    private final PasswordEncoder passwordEncoder;
+
+    public UsuarioController(UsuarioRepository repo, PasswordEncoder passwordEncoder) {
+        this.repo = repo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping
     public List<Usuario> getAll() { return repo.findAll(); }
@@ -34,14 +39,20 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<Usuario> create(@Valid @RequestBody Usuario u) {
+        u.setPassword(passwordEncoder.encode(u.getPassword()));
         return ResponseEntity.status(HttpStatus.CREATED).body(repo.save(u));
     }
 
     @PutMapping("/{id}")
     public Usuario update(@PathVariable Long id, @Valid @RequestBody Usuario u) {
-        if (!repo.existsById(id))
-            throw new ResourceNotFoundException("Usuario no encontrado con id: " + id);
+        Usuario existente = repo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
         u.setId(id);
+        if (u.getPassword() == null || u.getPassword().isBlank()) {
+            u.setPassword(existente.getPassword());
+        } else {
+            u.setPassword(passwordEncoder.encode(u.getPassword()));
+        }
         return repo.save(u);
     }
 

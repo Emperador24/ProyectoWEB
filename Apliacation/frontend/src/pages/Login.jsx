@@ -23,13 +23,8 @@ export default function Login() {
     setSelectedRol(rol)
     setStep('login')
     setError('')
-    const defaults = {
-      DOCENTE: { email: 'carlos.rodriguez@colegio.edu', password: 'doc123' },
-      COORDINADOR: { email: 'ana.garcia@colegio.edu', password: 'coord123' },
-      ADMIN: { email: 'admin@colegio.edu', password: 'admin123' },
-    }
-    setEmail(defaults[rol.key]?.email || '')
-    setPassword(defaults[rol.key]?.password || '')
+    setEmail('')
+    setPassword('')
   }
 
   const handleLogin = async () => {
