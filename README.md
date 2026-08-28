@@ -231,6 +231,3 @@ vigilancia-docente/
 ## 👤 Autor
 
 - Samuel Eduardo Emperador Contreras 📧 emperadorc.s@javeriana.edu.co
-- 
-- 
-- 
